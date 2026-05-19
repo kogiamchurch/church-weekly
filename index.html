@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>鼓巖教會週報</title>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
   <style>
+
     body{
       margin:0;
       background:#f3f1ec;
@@ -21,23 +24,22 @@
 
     h1{
       margin:0;
-      font-size:36px;
-      letter-spacing:2px;
+      font-size:42px;
     }
 
-    p{
-      margin:8px 0 0;
+    header p{
+      margin-top:10px;
     }
 
     main{
       max-width:900px;
       margin:30px auto;
-      padding:0 16px 40px;
+      padding:0 16px 60px;
     }
 
     .download{
       display:inline-block;
-      margin-bottom:20px;
+      margin-bottom:30px;
       padding:12px 20px;
       background:#333;
       color:white;
@@ -45,13 +47,14 @@
       border-radius:8px;
     }
 
-    .page{
+    canvas{
       width:100%;
       display:block;
-      margin:0 auto 28px;
+      margin-bottom:30px;
       background:white;
-      box-shadow:0 4px 18px rgba(0,0,0,.12);
+      box-shadow:0 4px 16px rgba(0,0,0,.12);
     }
+
   </style>
 </head>
 
@@ -63,13 +66,71 @@
 </header>
 
 <main>
-  <a class="download" href="weekly.pdf" target="_blank">下載原始 PDF</a>
 
-  <img class="page" src="pages/page-1.jpg" alt="週報第 1 頁">
-  <img class="page" src="pages/page-2.jpg" alt="週報第 2 頁">
-  <img class="page" src="pages/page-3.jpg" alt="週報第 3 頁">
-  <img class="page" src="pages/page-4.jpg" alt="週報第 4 頁">
+  <a class="download" href="weekly.pdf" target="_blank">
+    下載原始 PDF
+  </a>
+
+  <div id="pages"></div>
+
 </main>
+
+<script>
+
+const url = 'weekly.pdf';
+
+pdfjsLib.getDocument(url).promise.then(async function(pdf) {
+
+  const container = document.getElementById('pages');
+
+  for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
+
+    const page = await pdf.getPage(pageNum);
+
+    const viewport = page.getViewport({ scale: 2 });
+
+    const fullCanvas = document.createElement('canvas');
+    const fullContext = fullCanvas.getContext('2d');
+
+    fullCanvas.width = viewport.width;
+    fullCanvas.height = viewport.height;
+
+    await page.render({
+      canvasContext: fullContext,
+      viewport: viewport
+    }).promise;
+
+    const halfWidth = fullCanvas.width / 2;
+
+    for(let i = 0; i < 2; i++){
+
+      const splitCanvas = document.createElement('canvas');
+      const splitContext = splitCanvas.getContext('2d');
+
+      splitCanvas.width = halfWidth;
+      splitCanvas.height = fullCanvas.height;
+
+      splitContext.drawImage(
+        fullCanvas,
+        i * halfWidth,
+        0,
+        halfWidth,
+        fullCanvas.height,
+        0,
+        0,
+        halfWidth,
+        fullCanvas.height
+      );
+
+      container.appendChild(splitCanvas);
+
+    }
+
+  }
+
+});
+
+</script>
 
 </body>
 </html>
