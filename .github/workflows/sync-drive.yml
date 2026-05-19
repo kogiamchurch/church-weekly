@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: '*/10 * * * *'
 
+permissions:
+  contents: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -31,7 +34,6 @@ jobs:
           const { google } = require('googleapis');
 
           async function main() {
-
             const credentials = JSON.parse(
               fs.readFileSync('credentials.json')
             );
@@ -46,14 +48,13 @@ jobs:
               auth,
             });
 
-            const folderId =
-              process.env.GOOGLE_DRIVE_FOLDER_ID;
+            const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
 
             const res = await drive.files.list({
               q: `'${folderId}' in parents and mimeType='application/pdf' and trashed=false`,
-              orderBy: 'createdTime desc',
+              orderBy: 'modifiedTime desc',
               pageSize: 1,
-              fields: 'files(id, name)',
+              fields: 'files(id, name, createdTime, modifiedTime)',
             });
 
             if (!res.data.files.length) {
@@ -62,7 +63,9 @@ jobs:
 
             const file = res.data.files[0];
 
-            console.log('最新 PDF:', file.name);
+            console.log('同步 PDF:', file.name);
+            console.log('建立時間:', file.createdTime);
+            console.log('修改時間:', file.modifiedTime);
 
             const dest = fs.createWriteStream('weekly.pdf');
 
