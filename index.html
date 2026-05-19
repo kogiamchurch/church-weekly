@@ -39,9 +39,9 @@
     .page-wrapper{
       position:relative;
       margin-bottom:30px;
-      box-shadow:0 4px 16px rgba(0,0,0,.12);
       background:white;
       overflow:hidden;
+      box-shadow:0 4px 16px rgba(0,0,0,.12);
     }
 
     .cover-bg{
@@ -49,7 +49,7 @@
       top:0;
       left:0;
       width:100%;
-      z-index:1;
+      z-index:3;
       pointer-events:none;
     }
 
@@ -104,6 +104,7 @@
 
         const halfWidth = fullCanvas.width / 2;
 
+        // 右 -> 左
         for(let i = 1; i >= 0; i--){
 
           const splitCanvas = document.createElement('canvas');
@@ -127,7 +128,7 @@
           const wrapper = document.createElement('div');
           wrapper.className = 'page-wrapper';
 
-          // 第一頁加入 cover
+          // 第一頁加底圖
           if(pageNum === 1 && i === 1){
 
             const cover = document.createElement('img');
