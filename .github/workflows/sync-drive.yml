@@ -1,0 +1,107 @@
+name: Sync Weekly PDF
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/10 * * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Google APIs
+        run: npm install googleapis
+
+      - name: Create credentials file
+        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}' > credentials.json
+
+      - name: Download latest PDF from Google Drive
+        run: |
+          cat > sync.js << 'EOF'
+          const fs = require('fs');
+          const { google } = require('googleapis');
+
+          async function main() {
+
+            const credentials = JSON.parse(
+              fs.readFileSync('credentials.json')
+            );
+
+            const auth = new google.auth.GoogleAuth({
+              credentials,
+              scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+            });
+
+            const drive = google.drive({
+              version: 'v3',
+              auth,
+            });
+
+            const folderId =
+              process.env.GOOGLE_DRIVE_FOLDER_ID;
+
+            const res = await drive.files.list({
+              q: `'${folderId}' in parents and mimeType='application/pdf' and trashed=false`,
+              orderBy: 'createdTime desc',
+              pageSize: 1,
+              fields: 'files(id, name)',
+            });
+
+            if (!res.data.files.length) {
+              throw new Error('找不到 PDF');
+            }
+
+            const file = res.data.files[0];
+
+            console.log('最新 PDF:', file.name);
+
+            const dest = fs.createWriteStream('weekly.pdf');
+
+            const response = await drive.files.get(
+              {
+                fileId: file.id,
+                alt: 'media',
+              },
+              {
+                responseType: 'stream',
+              }
+            );
+
+            await new Promise((resolve, reject) => {
+              response.data
+                .pipe(dest)
+                .on('finish', resolve)
+                .on('error', reject);
+            });
+          }
+
+          main().catch(err => {
+            console.error(err);
+            process.exit(1);
+          });
+          EOF
+
+          node sync.js
+        env:
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+
+      - name: Commit updated PDF
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          git add weekly.pdf
+
+          git diff --cached --quiet || (
+            git commit -m "Auto update weekly PDF"
+            git push
+          )
