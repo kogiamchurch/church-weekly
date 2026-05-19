@@ -141,7 +141,7 @@ async function loadWeeklyPdf(data) {
 
       const halfWidth = fullCanvas.width / 2;
 
-      const order = pageNum === 1 ? [1, 0] : [0, 1];
+      const order = [1, 0];
 
       for (const i of order) {
         const splitCanvas = document.createElement("canvas");
