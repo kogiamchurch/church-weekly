@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>鼓巖教會週報</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -17,34 +20,29 @@
     }
 
     header{
-      text-align:center;
-      padding:36px 20px 24px;
-      background:#d8c7a1;
+      width:100%;
     }
 
-    h1{
-      margin:0;
-      font-size:42px;
-    }
-
-    header p{
-      margin-top:10px;
+    .cover{
+      width:100%;
+      display:block;
     }
 
     main{
       max-width:900px;
-      margin:30px auto;
-      padding:0 16px 60px;
+      margin:40px auto;
+      padding:0 16px 80px;
     }
 
     .download{
       display:inline-block;
       margin-bottom:30px;
-      padding:12px 20px;
+      padding:14px 22px;
       background:#333;
       color:white;
       text-decoration:none;
-      border-radius:8px;
+      border-radius:10px;
+      font-size:16px;
     }
 
     canvas{
@@ -56,81 +54,82 @@
     }
 
   </style>
+
 </head>
 
 <body>
 
-<header>
-  <h1>鼓巖教會週報</h1>
-  <p>台灣基督長老教會</p>
-</header>
+  <header>
+    <img src="cover.png" class="cover">
+  </header>
 
-<main>
+  <main>
 
-  <a class="download" href="weekly.pdf" target="_blank">
-    下載原始 PDF
-  </a>
+    <a class="download" href="weekly.pdf" target="_blank">
+      下載原始 PDF
+    </a>
 
-  <div id="pages"></div>
+    <div id="pages"></div>
 
-</main>
+  </main>
 
-<script>
+  <script>
 
-const url = 'weekly.pdf';
+    const url = 'weekly.pdf';
 
-pdfjsLib.getDocument(url).promise.then(async function(pdf) {
+    pdfjsLib.getDocument(url).promise.then(async function(pdf) {
 
-  const container = document.getElementById('pages');
+      const container = document.getElementById('pages');
 
-  for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
+      for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
 
-    const page = await pdf.getPage(pageNum);
+        const page = await pdf.getPage(pageNum);
 
-    const viewport = page.getViewport({ scale: 2 });
+        const viewport = page.getViewport({ scale: 2 });
 
-    const fullCanvas = document.createElement('canvas');
-    const fullContext = fullCanvas.getContext('2d');
+        const fullCanvas = document.createElement('canvas');
+        const fullContext = fullCanvas.getContext('2d');
 
-    fullCanvas.width = viewport.width;
-    fullCanvas.height = viewport.height;
+        fullCanvas.width = viewport.width;
+        fullCanvas.height = viewport.height;
 
-    await page.render({
-      canvasContext: fullContext,
-      viewport: viewport
-    }).promise;
+        await page.render({
+          canvasContext: fullContext,
+          viewport: viewport
+        }).promise;
 
-    const halfWidth = fullCanvas.width / 2;
+        const halfWidth = fullCanvas.width / 2;
 
-    for(let i = 1; i >= 0; i--){
+        for(let i = 1; i >= 0; i--){
 
-      const splitCanvas = document.createElement('canvas');
-      const splitContext = splitCanvas.getContext('2d');
+          const splitCanvas = document.createElement('canvas');
+          const splitContext = splitCanvas.getContext('2d');
 
-      splitCanvas.width = halfWidth;
-      splitCanvas.height = fullCanvas.height;
+          splitCanvas.width = halfWidth;
+          splitCanvas.height = fullCanvas.height;
 
-      splitContext.drawImage(
-        fullCanvas,
-        i * halfWidth,
-        0,
-        halfWidth,
-        fullCanvas.height,
-        0,
-        0,
-        halfWidth,
-        fullCanvas.height
-      );
+          splitContext.drawImage(
+            fullCanvas,
+            i * halfWidth,
+            0,
+            halfWidth,
+            fullCanvas.height,
+            0,
+            0,
+            halfWidth,
+            fullCanvas.height
+          );
 
-      container.appendChild(splitCanvas);
+          container.appendChild(splitCanvas);
 
-    }
+        }
 
-  }
+      }
 
-});
+    });
 
-</script>
+  </script>
 
 </body>
+
 </html>
