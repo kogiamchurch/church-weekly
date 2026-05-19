@@ -25,17 +25,6 @@
       padding:0 16px 80px;
     }
 
-    .download{
-      display:inline-block;
-      margin-bottom:30px;
-      padding:14px 22px;
-      background:#333;
-      color:white;
-      text-decoration:none;
-      border-radius:10px;
-      font-size:16px;
-    }
-
     .page-wrapper{
       position:relative;
       margin-bottom:30px;
@@ -69,10 +58,6 @@
 
   <main>
 
-    <a class="download" href="weekly.pdf" target="_blank">
-      下載原始 PDF
-    </a>
-
     <div id="pages"></div>
 
   </main>
@@ -104,7 +89,7 @@
 
         const halfWidth = fullCanvas.width / 2;
 
-        // 右 -> 左
+        // 右 → 左
         for(let i = 1; i >= 0; i--){
 
           const splitCanvas = document.createElement('canvas');
@@ -128,7 +113,7 @@
           const wrapper = document.createElement('div');
           wrapper.className = 'page-wrapper';
 
-          // 第一頁加底圖
+          // 第一頁加入底圖
           if(pageNum === 1 && i === 1){
 
             const cover = document.createElement('img');
