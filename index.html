@@ -2,16 +2,13 @@
 <html lang="zh-Hant">
 
 <head>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>鼓巖教會週報</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <style>
-
     body{
       margin:0;
       background:#f3f1ec;
@@ -49,31 +46,23 @@
       z-index:2;
       background:transparent;
     }
-
   </style>
-
 </head>
 
 <body>
 
   <main>
-
     <div id="pages"></div>
-
   </main>
 
   <script>
-
-    const url = 'weekly.pdf';
+    const url = "https://script.google.com/macros/s/AKfycbwM7YK8uB0_Pcgge6qktmdnBWMpWrCf3zjAla2LHvdyJ8u5RWyEiNW6SO_wIsxoDHFC/exec";
 
     pdfjsLib.getDocument(url).promise.then(async function(pdf) {
-
       const container = document.getElementById('pages');
 
       for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
-
         const page = await pdf.getPage(pageNum);
-
         const viewport = page.getViewport({ scale: 2 });
 
         const fullCanvas = document.createElement('canvas');
@@ -89,9 +78,7 @@
 
         const halfWidth = fullCanvas.width / 2;
 
-        // 右 → 左
         for(let i = 1; i >= 0; i--){
-
           const splitCanvas = document.createElement('canvas');
           const splitContext = splitCanvas.getContext('2d');
 
@@ -113,29 +100,19 @@
           const wrapper = document.createElement('div');
           wrapper.className = 'page-wrapper';
 
-          // 第一頁加入底圖
           if(pageNum === 1 && i === 1){
-
             const cover = document.createElement('img');
             cover.src = 'cover.png';
             cover.className = 'cover-bg';
-
             wrapper.appendChild(cover);
-
           }
 
           wrapper.appendChild(splitCanvas);
-
           container.appendChild(wrapper);
-
         }
-
       }
-
     });
-
   </script>
 
 </body>
-
 </html>
