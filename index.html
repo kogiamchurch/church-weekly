@@ -102,7 +102,7 @@ pdfjsLib.getDocument(url).promise.then(async function(pdf) {
 
     const halfWidth = fullCanvas.width / 2;
 
-    for(let i = 0; i < 2; i++){
+    for(let i = 1; i >= 0; i--){
 
       const splitCanvas = document.createElement('canvas');
       const splitContext = splitCanvas.getContext('2d');
