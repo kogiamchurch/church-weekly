@@ -47,15 +47,40 @@ canvas{
   background:transparent;
 }
 
-.loading,
-.error{
+.loading{
   text-align:center;
   padding:100px 20px;
+}
+
+.spinner{
+  width:50px;
+  height:50px;
+  border:5px solid #ddd;
+  border-top:5px solid #8b7355;
+  border-radius:50%;
+  margin:0 auto 20px;
+  animation:spin 1s linear infinite;
+}
+
+.loading-text{
   font-size:24px;
+  color:#666;
 }
 
 .error{
+  text-align:center;
+  padding:100px 20px;
   color:red;
+  font-size:24px;
+}
+
+@keyframes spin{
+  0%{
+    transform:rotate(0deg);
+  }
+  100%{
+    transform:rotate(360deg);
+  }
 }
 </style>
 </head>
@@ -63,26 +88,55 @@ canvas{
 <body>
 
 <main>
-  <div id="pages" class="loading">週報載入中...</div>
+  <div id="pages" class="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">週報載入中...</div>
+  </div>
 </main>
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-const url = "weekly.pdf";
+function base64ToUint8Array(base64) {
+  const raw = atob(base64);
+  const array = new Uint8Array(raw.length);
 
-async function loadWeeklyPdf() {
+  for (let i = 0; i < raw.length; i++) {
+    array[i] = raw.charCodeAt(i);
+  }
+
+  return array;
+}
+
+async function loadWeeklyPdf(data) {
+
   try {
-    const pdf = await pdfjsLib.getDocument(url).promise;
+
+    if (data.error) {
+      document.getElementById("pages").innerHTML =
+        `<div class="error">${data.error}</div>`;
+      return;
+    }
+
+    const pdfData = base64ToUint8Array(data.base64);
+
+    const pdf = await pdfjsLib.getDocument({
+      data: pdfData
+    }).promise;
+
     const container = document.getElementById("pages");
 
     container.className = "";
     container.innerHTML = "";
 
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+
       const page = await pdf.getPage(pageNum);
-      const viewport = page.getViewport({ scale: 2 });
+
+      const viewport = page.getViewport({
+        scale: 2
+      });
 
       const fullCanvas = document.createElement("canvas");
       const fullContext = fullCanvas.getContext("2d");
@@ -97,9 +151,14 @@ async function loadWeeklyPdf() {
 
       const halfWidth = fullCanvas.width / 2;
 
-      const order = pageNum === 1 ? [1, 0] : [0, 1];
+      // 第1頁：右→左
+      // 第2頁：左→右
+      const order = pageNum === 1
+        ? [1, 0]
+        : [0, 1];
 
       for (const i of order) {
+
         const splitCanvas = document.createElement("canvas");
         const splitContext = splitCanvas.getContext("2d");
 
@@ -121,26 +180,34 @@ async function loadWeeklyPdf() {
         const wrapper = document.createElement("div");
         wrapper.className = "page-wrapper";
 
+        // 第1頁加入底圖
         if (pageNum === 1 && i === 1) {
+
           const cover = document.createElement("img");
+
           cover.src = "cover.png";
           cover.className = "cover-bg";
+
           wrapper.appendChild(cover);
         }
 
         wrapper.appendChild(splitCanvas);
+
         container.appendChild(wrapper);
       }
     }
+
   } catch (error) {
+
     console.error(error);
+
     document.getElementById("pages").innerHTML =
       `<div class="error">週報載入失敗</div>`;
   }
 }
-
-loadWeeklyPdf();
 </script>
+
+<script src="https://script.google.com/macros/s/AKfycbwM7YK8uB0_Pcgge6qktmdnBWMpWrCf3zjAla2LHvdyJ8u5RWyEiNW6SO_wIsxoDHFC/exec"></script>
 
 </body>
 </html>
