@@ -110,7 +110,9 @@ function base64ToUint8Array(base64) {
 }
 
 async function loadWeeklyPdf(data) {
+
   try {
+
     if (data.error) {
       document.getElementById("pages").innerHTML =
         `<div class="error">${data.error}</div>`;
@@ -118,15 +120,23 @@ async function loadWeeklyPdf(data) {
     }
 
     const pdfData = base64ToUint8Array(data.base64);
-    const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+
+    const pdf = await pdfjsLib.getDocument({
+      data: pdfData
+    }).promise;
 
     const container = document.getElementById("pages");
+
     container.className = "";
     container.innerHTML = "";
 
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+
       const page = await pdf.getPage(pageNum);
-      const viewport = page.getViewport({ scale: 2 });
+
+      const viewport = page.getViewport({
+        scale: 2
+      });
 
       const fullCanvas = document.createElement("canvas");
       const fullContext = fullCanvas.getContext("2d");
@@ -141,9 +151,14 @@ async function loadWeeklyPdf(data) {
 
       const halfWidth = fullCanvas.width / 2;
 
-      const order = [1, 0];
+      // 第1頁：右→左
+      // 第2頁：左→右
+      const order = pageNum === 1
+        ? [1, 0]
+        : [0, 1];
 
       for (const i of order) {
+
         const splitCanvas = document.createElement("canvas");
         const splitContext = splitCanvas.getContext("2d");
 
@@ -165,19 +180,27 @@ async function loadWeeklyPdf(data) {
         const wrapper = document.createElement("div");
         wrapper.className = "page-wrapper";
 
+        // 第1頁加入底圖
         if (pageNum === 1 && i === 1) {
+
           const cover = document.createElement("img");
+
           cover.src = "cover.png";
           cover.className = "cover-bg";
+
           wrapper.appendChild(cover);
         }
 
         wrapper.appendChild(splitCanvas);
+
         container.appendChild(wrapper);
       }
     }
+
   } catch (error) {
+
     console.error(error);
+
     document.getElementById("pages").innerHTML =
       `<div class="error">週報載入失敗</div>`;
   }
