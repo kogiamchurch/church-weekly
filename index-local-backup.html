@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>鼓巖教會週報</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  background:#f3f1ec;
+  font-family:sans-serif;
+  color:#222;
+}
+
+main{
+  max-width:900px;
+  margin:40px auto;
+  padding:0 16px 80px;
+}
+
+.page-wrapper{
+  position:relative;
+  margin-bottom:30px;
+  background:white;
+  overflow:hidden;
+  box-shadow:0 4px 16px rgba(0,0,0,.12);
+}
+
+.cover-bg{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  z-index:3;
+  pointer-events:none;
+}
+
+canvas{
+  width:100%;
+  display:block;
+  position:relative;
+  z-index:2;
+  background:transparent;
+}
+
+.loading,
+.error{
+  text-align:center;
+  padding:100px 20px;
+  font-size:24px;
+}
+
+.error{
+  color:red;
+}
+</style>
+</head>
+
+<body>
+
+<main>
+  <div id="pages" class="loading">週報載入中...</div>
+</main>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const url = "weekly.pdf";
+
+async function loadWeeklyPdf() {
+  try {
+    const pdf = await pdfjsLib.getDocument(url).promise;
+    const container = document.getElementById("pages");
+
+    container.className = "";
+    container.innerHTML = "";
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const viewport = page.getViewport({ scale: 2 });
+
+      const fullCanvas = document.createElement("canvas");
+      const fullContext = fullCanvas.getContext("2d");
+
+      fullCanvas.width = viewport.width;
+      fullCanvas.height = viewport.height;
+
+      await page.render({
+        canvasContext: fullContext,
+        viewport: viewport
+      }).promise;
+
+      const halfWidth = fullCanvas.width / 2;
+
+      const order = pageNum === 1 ? [1, 0] : [0, 1];
+
+      for (const i of order) {
+        const splitCanvas = document.createElement("canvas");
+        const splitContext = splitCanvas.getContext("2d");
+
+        splitCanvas.width = halfWidth;
+        splitCanvas.height = fullCanvas.height;
+
+        splitContext.drawImage(
+          fullCanvas,
+          i * halfWidth,
+          0,
+          halfWidth,
+          fullCanvas.height,
+          0,
+          0,
+          halfWidth,
+          fullCanvas.height
+        );
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "page-wrapper";
+
+        if (pageNum === 1 && i === 1) {
+          const cover = document.createElement("img");
+          cover.src = "cover.png";
+          cover.className = "cover-bg";
+          wrapper.appendChild(cover);
+        }
+
+        wrapper.appendChild(splitCanvas);
+        container.appendChild(wrapper);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    document.getElementById("pages").innerHTML =
+      `<div class="error">週報載入失敗</div>`;
+  }
+}
+
+loadWeeklyPdf();
+</script>
+
+</body>
+</html>
