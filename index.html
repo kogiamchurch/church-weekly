@@ -142,12 +142,16 @@ async function loadWeeklyPdf() {
         const wrapper = document.createElement("div");
         wrapper.className = "page-wrapper";
 
+/*
+        // 下面這段是第1頁cover底圖-要暫時拿掉，上方加上 斜線跟米字 註解掉
         if (pageNum === 1 && i === 1) {
           const cover = document.createElement("img");
           cover.src = "cover.png";
           cover.className = "cover-bg";
           wrapper.appendChild(cover);
         }
+        // 上面這段是第1頁cover底圖-要暫時拿掉，下方加上 米字跟斜線 註解掉
+*/
 
         wrapper.appendChild(splitCanvas);
         container.appendChild(wrapper);
