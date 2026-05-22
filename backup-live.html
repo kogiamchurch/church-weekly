@@ -84,9 +84,8 @@ canvas{
   }
 }
 
-/* iPad + 手機版 */
-
-@media (max-width: 1024px){
+/* iPad + 手機直式版 */
+@media (orientation: portrait) and (max-width: 1024px){
 
   main{
     max-width:100%;
@@ -98,9 +97,10 @@ canvas{
     margin-bottom:20px;
     box-shadow:0 2px 8px rgba(0,0,0,.08);
   }
+
   .page-wrapper:last-child{
-  margin-bottom:0;
-}
+    margin-bottom:0;
+  }
 
 }
 </style>
@@ -151,12 +151,17 @@ async function loadWeeklyPdf(data) {
     container.className = "";
     container.innerHTML = "";
 
+    const isPortraitTabletOrMobile =
+      window.matchMedia("(orientation: portrait) and (max-width: 1024px)").matches;
+
+    const scale = isPortraitTabletOrMobile ? 2 : 3;
+
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
 
       const page = await pdf.getPage(pageNum);
 
       const viewport = page.getViewport({
-        scale: 2
+        scale: scale
       });
 
       const fullCanvas = document.createElement("canvas");
@@ -214,7 +219,7 @@ async function loadWeeklyPdf(data) {
         }
         /*上面這段是第1頁cover底圖-要暫時拿掉，用註解方式*/
 
-        
+
         wrapper.appendChild(splitCanvas);
 
         container.appendChild(wrapper);
