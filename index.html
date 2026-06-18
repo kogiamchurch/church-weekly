@@ -22,6 +22,19 @@ main{
   padding:0 8px 0px;
 }
 
+.update-notice{
+  background:#fff8e6;
+  border:1px solid #e6c76e;
+  color:#6b5200;
+  font-size:18px;
+  font-weight:600;
+  text-align:center;
+  padding:14px 16px;
+  margin-bottom:20px;
+  border-radius:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
 .page-wrapper{
   position:relative;
   margin-bottom:30px;
@@ -68,6 +81,14 @@ canvas{
     padding:0;
   }
 
+  .update-notice{
+    margin:0;
+    border-radius:0;
+    border-left:none;
+    border-right:none;
+    font-size:16px;
+  }
+
   .page-wrapper{
     margin-bottom:20px;
     box-shadow:0 2px 8px rgba(0,0,0,.08);
@@ -84,6 +105,10 @@ canvas{
 <body>
 
 <main>
+  <div id="updateNotice" class="update-notice">
+    網站調整中，以下為最新週報
+  </div>
+
   <div id="pages" class="loading">週報載入中...</div>
 </main>
 
