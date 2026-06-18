@@ -3,7 +3,6 @@ name: Sync Weekly PDF
 on:
   workflow_dispatch:
 
-
 permissions:
   contents: write
 
@@ -66,6 +65,18 @@ jobs:
             console.log('建立時間:', file.createdTime);
             console.log('修改時間:', file.modifiedTime);
 
+            const info = {
+              name: file.name,
+              createdTime: file.createdTime,
+              modifiedTime: file.modifiedTime,
+              syncedAt: new Date().toISOString()
+            };
+
+            fs.writeFileSync(
+              'weekly-info.json',
+              JSON.stringify(info, null, 2)
+            );
+
             const dest = fs.createWriteStream('weekly.pdf');
 
             const response = await drive.files.get(
@@ -96,14 +107,14 @@ jobs:
         env:
           GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
 
-      - name: Commit updated PDF
+      - name: Commit updated PDF and info
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
 
-          git add weekly.pdf
+          git add weekly.pdf weekly-info.json
 
           git diff --cached --quiet || (
-            git commit -m "Auto update weekly PDF"
+            git commit -m "Auto update weekly PDF and info"
             git push
           )
