@@ -23,6 +23,7 @@ main{
 }
 
 .update-notice{
+  display:none;
   background:#fff8e6;
   border:1px solid #e6c76e;
   color:#6b5200;
@@ -106,7 +107,7 @@ canvas{
 
 <main>
   <div id="updateNotice" class="update-notice">
-    網站調整中，以下為最新週報
+    本週週報尚在更新中，目前顯示上一期週報，敬請稍候。
   </div>
 
   <div id="pages" class="loading">週報載入中...</div>
@@ -118,8 +119,71 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 const url = "weekly.pdf";
 
+function getThisWeekMondayStart(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+
+  d.setDate(d.getDate() + diffToMonday);
+  d.setHours(0, 0, 0, 0);
+
+  return d;
+}
+
+function getThisWeekThursdaySix(date) {
+  const monday = getThisWeekMondayStart(date);
+
+  const thursday = new Date(monday);
+  thursday.setDate(monday.getDate() + 3);
+  thursday.setHours(6, 0, 0, 0);
+
+  return thursday;
+}
+
+async function checkWeeklyUpdateNotice() {
+  const notice = document.getElementById("updateNotice");
+
+  try {
+    const response = await fetch("weekly-info.json?v=" + Date.now());
+
+    if (!response.ok) {
+      notice.style.display = "none";
+      return;
+    }
+
+    const info = await response.json();
+
+    if (!info.modifiedTime) {
+      notice.style.display = "none";
+      return;
+    }
+
+    const now = new Date();
+    const pdfUpdated = new Date(info.modifiedTime);
+
+    const weekStart = getThisWeekMondayStart(now);
+    const thursdaySix = getThisWeekThursdaySix(now);
+
+    const shouldCheckUpdate = now.getTime() >= thursdaySix.getTime();
+    const isCurrentWeekPdf = pdfUpdated.getTime() >= weekStart.getTime();
+
+    if (shouldCheckUpdate && !isCurrentWeekPdf) {
+      notice.style.display = "block";
+    } else {
+      notice.style.display = "none";
+    }
+
+  } catch (error) {
+    console.error(error);
+    notice.style.display = "none";
+  }
+}
+
 async function loadWeeklyPdf() {
   try {
+    await checkWeeklyUpdateNotice();
+
     const pdf = await pdfjsLib.getDocument(url).promise;
     const container = document.getElementById("pages");
 
