@@ -126,7 +126,7 @@ canvas{
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-const url = "weekly.pdf";
+let pdfUrl = "weekly.pdf";
 
 function getThisWeekMondayStart(date) {
   const d = new Date(date);
@@ -168,6 +168,8 @@ async function checkWeeklyUpdateNotice() {
       return;
     }
 
+    pdfUrl = "weekly.pdf?v=" + encodeURIComponent(info.modifiedTime);
+
     const now = new Date();
     const pdfUpdated = new Date(info.modifiedTime);
 
@@ -193,7 +195,7 @@ async function loadWeeklyPdf() {
   try {
     await checkWeeklyUpdateNotice();
 
-    const pdf = await pdfjsLib.getDocument(url).promise;
+    const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
     const container = document.getElementById("pages");
 
     container.className = "";
