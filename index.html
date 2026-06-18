@@ -36,6 +36,12 @@ main{
   box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
 
+.update-subtitle{
+  font-size:0.7em;
+  font-weight:500;
+  margin-top:10px;
+}
+
 .page-wrapper{
   position:relative;
   margin-bottom:30px;
@@ -107,8 +113,9 @@ canvas{
 
 <main>
   <div id="updateNotice" class="update-notice">
-      本週週報尚在更新中<br>
-      目前顯示上一期週報，敬請稍候。
+  本週週報尚在更新中
+  <div class="update-subtitle">
+  目前顯示上一期週報，敬請稍候。
   </div>
 
   <div id="pages" class="loading">週報載入中...</div>
