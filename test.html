@@ -22,6 +22,57 @@ main{
   padding:0 8px 0px;
 }
 
+/* 上方功能按鈕 */
+.quick-links{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.quick-card{
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  background:#fff;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:10px;
+  padding:18px 20px;
+
+  text-decoration:none;
+  color:#333;
+
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.quick-card.disabled{
+  opacity:.55;
+  pointer-events:none;
+}
+
+.quick-icon{
+  width:42px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:30px;
+  flex-shrink:0;
+}
+
+.quick-title{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.quick-subtitle{
+  font-size:15px;
+  color:#777;
+}
+
 .update-notice{
   display:none;
 
@@ -112,6 +163,32 @@ canvas{
     padding:0;
   }
 
+  .quick-links{
+    gap:8px;
+    margin:0 0 12px;
+    padding:10px;
+  }
+
+  .quick-card{
+    padding:14px 12px;
+    gap:10px;
+    border-radius:8px;
+  }
+
+  .quick-icon{
+    width:34px;
+    height:34px;
+    font-size:24px;
+  }
+
+  .quick-title{
+    font-size:16px;
+  }
+
+  .quick-subtitle{
+    font-size:13px;
+  }
+
   .update-notice{
     margin:0;
     border-radius:0;
@@ -148,25 +225,49 @@ canvas{
 <body>
 
 <main>
-<div id="updateNotice" class="update-notice">
 
-  <div class="update-icon">
-    ⚠️
-  </div>
+  <div class="quick-links">
 
-  <div class="update-content">
+    <a class="quick-card" href="你的Google表單網址" target="_blank">
+      <div class="quick-icon">✉</div>
+      <div>
+        <div class="quick-title">教會信箱</div>
+        <div class="quick-subtitle">聯絡我們</div>
+      </div>
+    </a>
 
-    <div class="update-title">
-      本週週報尚在更新中
+    <div class="quick-card disabled">
+      <div class="quick-icon">♫</div>
+      <div>
+        <div class="quick-title">本週詩歌</div>
+        <div class="quick-subtitle">目前尚無資料</div>
+      </div>
     </div>
 
-    <div class="update-subtitle">
-      目前顯示上一期週報，敬請稍候。
-    </div>
   </div>
-</div>
+
+  <div id="updateNotice" class="update-notice">
+
+    <div class="update-icon">
+      ⚠️
+    </div>
+
+    <div class="update-content">
+
+      <div class="update-title">
+        本週週報尚在更新中
+      </div>
+
+      <div class="update-subtitle">
+        目前顯示上一期週報，敬請稍候。
+      </div>
+
+    </div>
+
+  </div>
 
   <div id="pages" class="loading">週報載入中...</div>
+
 </main>
 
 <script>
@@ -226,10 +327,11 @@ async function checkWeeklyUpdateNotice() {
     const shouldCheckUpdate = now.getTime() >= thursdaySix.getTime();
     const isCurrentWeekPdf = pdfUpdated.getTime() >= weekStart.getTime();
 
-
+    if (shouldCheckUpdate && !isCurrentWeekPdf) {
       notice.style.display = "flex";
-
-
+    } else {
+      notice.style.display = "none";
+    }
 
   } catch (error) {
     console.error(error);
