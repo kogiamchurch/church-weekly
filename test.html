@@ -51,6 +51,43 @@ main{
   pointer-events:none;
 }
 
+  .mail-card{
+  background:#edf8f0;
+  border:1px solid #d6eadb;
+  color:#2f6b45;
+}
+
+.mail-card .quick-icon{
+  color:#4f9b68;
+}
+
+.mail-card .quick-title{
+  color:#2f6b45;
+}
+
+.mail-card .quick-subtitle{
+  color:#5f8a6d;
+}
+
+.song-card{
+  background:#eef5ff;
+  border:1px solid #d8e7ff;
+  color:#3b66b0;
+}
+
+.song-card .quick-icon{
+  color:#5b8def;
+}
+
+.song-card .quick-title{
+  color:#3b66b0;
+}
+
+.song-card .quick-subtitle{
+  color:#6b88bb;
+}
+  
+
 .quick-icon{
   width:42px;
   height:42px;
@@ -166,7 +203,7 @@ canvas{
   .quick-links{
     gap:8px;
     margin:0 0 12px;
-    padding:10px;
+    padding:0 0 12px;
   }
 
   .quick-card{
@@ -228,21 +265,21 @@ canvas{
 
   <div class="quick-links">
 
-    <a class="quick-card" href="你的Google表單網址" target="_blank">
+    <a class="quick-card mail-card" href="https://docs.google.com/forms/d/e/1FAIpQLSdkNuP4T47a7h5yCSkHeDyYf6dRgMisMRpGmdeIc_J9k3Cytg/viewform?usp=send_form" target="_blank">
       <div class="quick-icon">✉</div>
       <div>
         <div class="quick-title">教會信箱</div>
-        <div class="quick-subtitle">聯絡我們</div>
+        <div class="quick-subtitle">我有話想說</div>
       </div>
     </a>
 
-    <div class="quick-card disabled">
+    <a class="quick-card song-card" href="#">
       <div class="quick-icon">♫</div>
       <div>
         <div class="quick-title">本週詩歌</div>
         <div class="quick-subtitle">目前尚無資料</div>
       </div>
-    </div>
+    </a>
 
   </div>
 
@@ -327,17 +364,11 @@ async function checkWeeklyUpdateNotice() {
     const shouldCheckUpdate = now.getTime() >= thursdaySix.getTime();
     const isCurrentWeekPdf = pdfUpdated.getTime() >= weekStart.getTime();
 
-
-
-
-    
+    if (shouldCheckUpdate && !isCurrentWeekPdf) {
       notice.style.display = "flex";
-
-
-
-
-
-    
+    } else {
+      notice.style.display = "none";
+    }
 
   } catch (error) {
     console.error(error);
