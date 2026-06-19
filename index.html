@@ -24,24 +24,41 @@ main{
 
 .update-notice{
   display:none;
-  background:#fff8e6;
-  border:1px solid #e6c76e;
-  color:#6b5200;
-  font-size:36px;
-  font-weight:700;
-  text-align:center;
+  background:#fff3cd;
+  border:1px solid #ffe69c;
+  color:#7a5a00;
+  border-radius:8px;
   padding:18px 20px;
   margin-bottom:20px;
-  border-radius:8px;
+
+  align-items:flex-start;
+  gap:14px;
+
   box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
 
-.update-subtitle{
-  font-size:0.7em;
-  font-weight:500;
-  margin-top:10px;
+.update-icon{
+  font-size:28px;
+  line-height:1;
+  flex-shrink:0;
 }
 
+.update-content{
+  text-align:left;
+}
+
+.update-title{
+  font-size:24px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.update-subtitle{
+  font-size:16px;
+  line-height:1.6;
+  color:#6b5200;
+}
+  
 .page-wrapper{
   position:relative;
   margin-bottom:30px;
@@ -93,6 +110,17 @@ canvas{
     border-radius:0;
     border-left:none;
     border-right:none;
+  }
+
+  .update-title{
+    font-size:20px;
+  }
+
+  .update-subtitle{
+    font-size:14px;
+  }
+
+  .update-icon{
     font-size:24px;
   }
 
@@ -106,16 +134,28 @@ canvas{
   }
 
 }
+  
 </style>
 </head>
 
 <body>
 
 <main>
-  <div id="updateNotice" class="update-notice">
-  本週週報尚在更新中
-  <div class="update-subtitle">
-  目前顯示上一期週報，敬請稍候。
+<div id="updateNotice" class="update-notice">
+
+  <div class="update-icon">
+    ⚠️
+  </div>
+
+  <div class="update-content">
+
+    <div class="update-title">
+      本週週報尚在更新中
+    </div>
+
+    <div class="update-subtitle">
+      目前顯示上一期週報，敬請稍候。
+    </div>
   </div>
 </div>
 
@@ -180,7 +220,7 @@ async function checkWeeklyUpdateNotice() {
     const isCurrentWeekPdf = pdfUpdated.getTime() >= weekStart.getTime();
 
     if (shouldCheckUpdate && !isCurrentWeekPdf) {
-      notice.style.display = "block";
+      notice.style.display = "flex";
     } else {
       notice.style.display = "none";
     }
