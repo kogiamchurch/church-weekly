@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>鼓巖教會週報</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  background:#f3f1ec;
+  font-family:sans-serif;
+  color:#222;
+}
+
+main{
+  max-width:900px;
+  margin:40px auto;
+  padding:0 8px 0px;
+}
+
+.update-notice{
+  display:none;
+  background:#fff8e6;
+  border:1px solid #e6c76e;
+  color:#6b5200;
+  font-size:36px;
+  font-weight:700;
+  text-align:center;
+  padding:18px 20px;
+  margin-bottom:20px;
+  border-radius:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.update-subtitle{
+  font-size:0.7em;
+  font-weight:500;
+  margin-top:10px;
+}
+
+.page-wrapper{
+  position:relative;
+  margin-bottom:30px;
+  background:white;
+  overflow:hidden;
+  box-shadow:0 4px 16px rgba(0,0,0,.12);
+}
+
+/* top可以調整cover圖的距離 */
+.cover-bg{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  z-index:3;
+  pointer-events:none;
+}
+
+canvas{
+  width:100%;
+  display:block;
+  position:relative;
+  z-index:2;
+  background:transparent;
+}
+
+.loading,
+.error{
+  text-align:center;
+  padding:100px 20px;
+  font-size:24px;
+}
+
+.error{
+  color:red;
+}
+
+/* iPad + 手機直式版 */
+@media (orientation: portrait) and (max-width: 1024px){
+
+  main{
+    max-width:100%;
+    margin:0;
+    padding:0;
+  }
+
+  .update-notice{
+    margin:0;
+    border-radius:0;
+    border-left:none;
+    border-right:none;
+    font-size:24px;
+  }
+
+  .page-wrapper{
+    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+  }
+
+  .page-wrapper:last-child{
+    margin-bottom:0;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<main>
+  <div id="updateNotice" class="update-notice">
+  本週週報尚在更新中
+  <div class="update-subtitle">
+  目前顯示上一期週報，敬請稍候。
+  </div>
+</div>
+
+  <div id="pages" class="loading">週報載入中...</div>
+</main>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+let pdfUrl = "weekly.pdf";
+
+function getThisWeekMondayStart(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+
+  d.setDate(d.getDate() + diffToMonday);
+  d.setHours(0, 0, 0, 0);
+
+  return d;
+}
+
+function getThisWeekThursdaySix(date) {
+  const monday = getThisWeekMondayStart(date);
+
+  const thursday = new Date(monday);
+  thursday.setDate(monday.getDate() + 3);
+  thursday.setHours(6, 0, 0, 0);
+
+  return thursday;
+}
+
+async function checkWeeklyUpdateNotice() {
+  const notice = document.getElementById("updateNotice");
+
+  try {
+    const response = await fetch("weekly-info.json?v=" + Date.now());
+
+    if (!response.ok) {
+      notice.style.display = "none";
+      return;
+    }
+
+    const info = await response.json();
+
+    if (!info.modifiedTime) {
+      notice.style.display = "none";
+      return;
+    }
+
+    pdfUrl = "weekly.pdf?v=" + encodeURIComponent(info.modifiedTime);
+
+    const now = new Date();
+    const pdfUpdated = new Date(info.modifiedTime);
+
+    const weekStart = getThisWeekMondayStart(now);
+    const thursdaySix = getThisWeekThursdaySix(now);
+
+    const shouldCheckUpdate = now.getTime() >= thursdaySix.getTime();
+    const isCurrentWeekPdf = pdfUpdated.getTime() >= weekStart.getTime();
+
+    if (shouldCheckUpdate && !isCurrentWeekPdf) {
+      notice.style.display = "block";
+    } else {
+      notice.style.display = "none";
+    }
+
+  } catch (error) {
+    console.error(error);
+    notice.style.display = "none";
+  }
+}
+
+async function loadWeeklyPdf() {
+  try {
+    await checkWeeklyUpdateNotice();
+
+    const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+    const container = document.getElementById("pages");
+
+    container.className = "";
+    container.innerHTML = "";
+
+    const isPortraitTabletOrMobile =
+      window.matchMedia("(orientation: portrait) and (max-width: 1024px)").matches;
+
+    const scale = isPortraitTabletOrMobile ? 2 : 3;
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+
+      const viewport = page.getViewport({
+        scale: scale
+      });
+
+      const fullCanvas = document.createElement("canvas");
+      const fullContext = fullCanvas.getContext("2d");
+
+      fullCanvas.width = viewport.width;
+      fullCanvas.height = viewport.height;
+
+      await page.render({
+        canvasContext: fullContext,
+        viewport: viewport
+      }).promise;
+
+      const halfWidth = fullCanvas.width / 2;
+
+      const order = pageNum === 1 ? [1, 0] : [0, 1];
+
+      for (const i of order) {
+        const splitCanvas = document.createElement("canvas");
+        const splitContext = splitCanvas.getContext("2d");
+
+        splitCanvas.width = halfWidth;
+        splitCanvas.height = fullCanvas.height;
+
+        splitContext.drawImage(
+          fullCanvas,
+          i * halfWidth,
+          0,
+          halfWidth,
+          fullCanvas.height,
+          0,
+          0,
+          halfWidth,
+          fullCanvas.height
+        );
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "page-wrapper";
+
+
+        /* 下面這段是第1頁cover底圖-要暫時拿掉，用註解方式*/
+        if (pageNum === 1 && i === 1) {
+          const cover = document.createElement("img");
+          cover.src = "cover.png";
+          cover.className = "cover-bg";
+          wrapper.appendChild(cover);
+        }
+        /*上面這段是第1頁cover底圖-要暫時拿掉，用註解方式*/
+
+
+        wrapper.appendChild(splitCanvas);
+        container.appendChild(wrapper);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    document.getElementById("pages").innerHTML =
+      `<div class="error">週報載入失敗</div>`;
+  }
+}
+
+loadWeeklyPdf();
+</script>
+
+</body>
+</html>
