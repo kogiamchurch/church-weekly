@@ -327,11 +327,17 @@ async function checkWeeklyUpdateNotice() {
     const shouldCheckUpdate = now.getTime() >= thursdaySix.getTime();
     const isCurrentWeekPdf = pdfUpdated.getTime() >= weekStart.getTime();
 
-    if (shouldCheckUpdate && !isCurrentWeekPdf) {
+
+
+
+    
       notice.style.display = "flex";
-    } else {
-      notice.style.display = "none";
-    }
+
+
+
+
+
+    
 
   } catch (error) {
     console.error(error);
