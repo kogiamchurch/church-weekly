@@ -1,4 +1,17 @@
 {
-  "updatedAt": "2026-06-20T11:46:06.889Z",
-  "songs": []
+  "updatedAt": "2026-06-20T11:57:17.492Z",
+  "songs": [
+    {
+      "title": "讚美之泉 Stream of Praise",
+      "url": "https://www.youtube.com/watch?v=x-DysGdCg4k&list=RDx-DysGdCg4k&start_radio=1"
+    },
+    {
+      "title": "在祢沒有難成的事",
+      "url": "https://youtu.be/xbnG_8iDoew?si=-vCbggW3mKbf75X7"
+    },
+    {
+      "title": "耶穌 超乎萬名的名",
+      "url": "https://www.youtube.com/watch?v=jmkKSCC4sMg&list=RDx-DysGdCg4k&index=4"
+    }
+  ]
 }
