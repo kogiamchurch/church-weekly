@@ -31,6 +31,8 @@ main{
 }
 
 .quick-card{
+  width:100%;
+  box-sizing:border-box;
   display:flex;
   align-items:center;
   gap:14px;
@@ -39,6 +41,7 @@ main{
   border:1px solid rgba(0,0,0,.08);
   border-radius:10px;
   padding:18px 20px;
+  font-family:inherit;
 
   text-decoration:none;
   color:#333;
@@ -50,6 +53,7 @@ main{
 .quick-card.disabled{
   opacity:.55;
   pointer-events:none;
+  cursor:default;
 }
 
 .mail-card{
@@ -86,6 +90,18 @@ main{
 
 .song-card .quick-subtitle{
   color:#6b88bb;
+}
+
+.song-card.no-data{
+  background:#f4f4f4;
+  border:1px solid #e0e0e0;
+  color:#999;
+}
+
+.song-card.no-data .quick-icon,
+.song-card.no-data .quick-title,
+.song-card.no-data .quick-subtitle{
+  color:#999;
 }
 
 .quick-icon{
@@ -374,11 +390,11 @@ canvas{
       </div>
     </a>
 
-    <button class="quick-card song-card" type="button" onclick="openSongPanel()">
+    <button id="songButton" class="quick-card song-card no-data disabled" type="button" onclick="openSongPanel()">
       <div class="quick-icon">♫</div>
       <div>
         <div class="quick-title">本週詩歌</div>
-        <div class="quick-subtitle">查看本週敬拜詩歌</div>
+        <div id="songButtonSubtitle" class="quick-subtitle">本週尚無資料</div>
       </div>
     </button>
 
@@ -416,68 +432,7 @@ canvas{
       <button class="song-close" type="button" onclick="closeSongPanel()">×</button>
     </div>
 
-    
-
-<div class="song-list">
-
-  <div class="song-item">
-    <div class="song-name">
-      1. 我們的神 You Are Our God
-    </div>
-    <a class="song-link"
-       href="https://youtu.be/7vihn5MpWSc?si=9ACUURo0-hzAj4RI"
-       target="_blank">
-      聽詩歌
-    </a>
-  </div>
-
-  <div class="song-item">
-    <div class="song-name">
-      2. 不動搖的信心 Unshakeable Faith
-    </div>
-    <a class="song-link"
-       href="https://www.youtube.com/watch?v=0MWwOBy-zzY&list=PLM9Lrw7Vs5CGowYUfxwCVAzjP-Y7NjSNp&index=8"
-       target="_blank">
-      聽詩歌
-    </a>
-  </div>
-
-  <div class="song-item">
-    <div class="song-name">
-      3. 我們的神 You Are Our God
-    </div>
-    <a class="song-link"
-       href="https://youtu.be/7vihn5MpWSc?si=9ACUURo0-hzAj4RI"
-       target="_blank">
-      聽詩歌
-    </a>
-  </div>
-
-  <div class="song-item">
-    <div class="song-name">
-      4. 不動搖的信心 Unshakeable Faith
-    </div>
-    <a class="song-link"
-       href="https://www.youtube.com/watch?v=0MWwOBy-zzY&list=PLM9Lrw7Vs5CGowYUfxwCVAzjP-Y7NjSNp&index=8"
-       target="_blank">
-      聽詩歌
-    </a>
-  </div>
-
-  <div class="song-item">
-    <div class="song-name">
-      5. 我們的神 You Are Our God
-    </div>
-    <a class="song-link"
-       href="https://youtu.be/7vihn5MpWSc?si=9ACUURo0-hzAj4RI"
-       target="_blank">
-      聽詩歌
-    </a>
-  </div>
-
-</div>
-
-    
+    <div id="songList" class="song-list"></div>
 
   </div>
 </div>
@@ -487,13 +442,87 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
 let pdfUrl = "weekly.pdf";
+let currentSongs = [];
 
 function openSongPanel() {
+  if (!currentSongs.length) return;
   document.getElementById("songOverlay").classList.add("show");
 }
 
 function closeSongPanel() {
   document.getElementById("songOverlay").classList.remove("show");
+}
+
+function updateSongButton(hasSongs) {
+  const songButton = document.getElementById("songButton");
+  const subtitle = document.getElementById("songButtonSubtitle");
+
+  if (hasSongs) {
+    songButton.classList.remove("no-data", "disabled");
+    subtitle.textContent = "查看本週敬拜詩歌";
+  } else {
+    songButton.classList.add("no-data", "disabled");
+    subtitle.textContent = "本週尚無資料";
+  }
+}
+
+function renderSongs(songs) {
+  const songList = document.getElementById("songList");
+
+  songList.innerHTML = "";
+
+  songs.forEach((song, index) => {
+    const item = document.createElement("div");
+    item.className = "song-item";
+
+    const name = document.createElement("div");
+    name.className = "song-name";
+    name.textContent = (index + 1) + ". " + song.title;
+
+    const link = document.createElement("a");
+    link.className = "song-link";
+    link.href = song.url;
+    link.target = "_blank";
+    link.textContent = "聽詩歌";
+
+    item.appendChild(name);
+    item.appendChild(link);
+    songList.appendChild(item);
+  });
+}
+
+async function loadSongs() {
+  try {
+    const response = await fetch("songs.json?v=" + Date.now());
+
+    if (!response.ok) {
+      currentSongs = [];
+      updateSongButton(false);
+      return;
+    }
+
+    const data = await response.json();
+
+    const songs = Array.isArray(data.songs)
+      ? data.songs.filter(song => song.title && song.url)
+      : [];
+
+    currentSongs = songs;
+
+    if (songs.length) {
+      renderSongs(songs);
+      updateSongButton(true);
+    } else {
+      renderSongs([]);
+      updateSongButton(false);
+    }
+
+  } catch (error) {
+    console.error(error);
+    currentSongs = [];
+    renderSongs([]);
+    updateSongButton(false);
+  }
 }
 
 function getThisWeekMondayStart(date) {
@@ -640,6 +669,7 @@ async function loadWeeklyPdf() {
   }
 }
 
+loadSongs();
 loadWeeklyPdf();
 </script>
 
