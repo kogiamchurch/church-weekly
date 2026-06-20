@@ -503,7 +503,17 @@ async function loadSongs() {
 
     const data = await response.json();
 
-    const songs = Array.isArray(data.songs)
+    const songUpdatedAt = data.updatedAt
+      ? new Date(data.updatedAt)
+      : null;
+
+    const weekStart = getThisWeekMondayStart(new Date());
+
+    const isCurrentWeek =
+      songUpdatedAt &&
+      songUpdatedAt.getTime() >= weekStart.getTime();
+
+    const songs = isCurrentWeek && Array.isArray(data.songs)
       ? data.songs.filter(song => song.title && song.url)
       : [];
 
