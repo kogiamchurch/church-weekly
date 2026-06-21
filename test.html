@@ -194,6 +194,11 @@ main{
   padding:16px;
 }
 
+.song-item.is-selected{
+  background:#eef5ff;
+  border-color:#bcd5ff;
+}
+
 .song-name{
   font-size:18px;
   font-weight:700;
@@ -534,38 +539,40 @@ function renderSongs(songs) {
   songList.innerHTML = "";
 
   songs.forEach((song, index) => {
+
     const item = document.createElement("div");
     item.className = "song-item";
+
+    if (currentPlayingIndex === index) {
+      item.classList.add("is-selected");
+    }
 
     const name = document.createElement("div");
     name.className = "song-name";
     name.textContent = (index + 1) + ". " + song.title;
 
-    const link = document.createElement("a");
-    link.className = "song-link";
-    link.href = "#";
+    item.appendChild(name);
 
-    if (currentPlayingIndex === index) {
+    if (currentPlayingIndex !== index) {
 
-      link.textContent = "播放中";
-      link.classList.add("is-playing");
-
-    } else {
-
+      const link = document.createElement("a");
+      link.className = "song-link";
+      link.href = "#";
       link.textContent = "聽詩歌";
-      link.classList.remove("is-playing");
 
       link.onclick = function(e){
         e.preventDefault();
         playSong(song.url, index);
       };
 
+      item.appendChild(link);
+
     }
 
-    item.appendChild(name);
-    item.appendChild(link);
     songList.appendChild(item);
+
   });
+
 }
 
 async function loadSongs() {
