@@ -194,6 +194,11 @@ main{
   padding:16px;
 }
 
+.song-item.is-selected{
+  background:#eef5ff;
+  border-color:#bcd5ff;
+}
+
 .song-name{
   font-size:18px;
   font-weight:700;
@@ -212,6 +217,14 @@ main{
   font-weight:700;
   padding:8px 14px;
   border-radius:999px;
+}
+
+  .song-link.is-playing{
+  background:#e5e5e5;
+  border-color:#d0d0d0;
+  color:#888;
+  pointer-events:none;
+  cursor:default;
 }
 
 .update-notice{
@@ -432,9 +445,30 @@ canvas{
       <button class="song-close" type="button" onclick="closeSongPanel()">×</button>
     </div>
 
-    <div id="songList" class="song-list"></div>
+<div id="playerContainer" style="display:none;margin-bottom:18px;">
 
+  <div style="
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:10px;
+    color:#2f4f7f;
+  ">
+    正在播放
   </div>
+
+  <iframe
+    id="youtubePlayer"
+    width="100%"
+    height="220"
+    src=""
+    frameborder="0"
+    allow="autoplay; encrypted-media; picture-in-picture"
+    allowfullscreen>
+  </iframe>
+
+</div>
+
+<div id="songList" class="song-list"></div>
 </div>
 
 <script>
@@ -443,6 +477,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 let pdfUrl = "weekly.pdf";
 let currentSongs = [];
+let currentPlayingIndex = null;
 
 function openSongPanel() {
   if (!currentSongs.length) return;
@@ -451,7 +486,40 @@ function openSongPanel() {
 
 function closeSongPanel() {
   document.getElementById("songOverlay").classList.remove("show");
+
+  document.getElementById("youtubePlayer").src = "";
+  document.getElementById("playerContainer").style.display = "none";
+
+  currentPlayingIndex = null;
+  renderSongs(currentSongs);
 }
+
+  function playSong(url, index) {
+    
+  currentPlayingIndex = index;
+
+  const match = url.match(
+    /(?:youtu\.be\/|v=)([^&\n?#]+)/
+  );
+
+  if (!match) {
+    window.open(url, "_blank");
+    return;
+  }
+
+  const videoId = match[1];
+
+  document.getElementById("playerContainer").style.display = "block";
+
+  document.getElementById("youtubePlayer").src =
+    "https://www.youtube.com/embed/" +
+    videoId +
+    "?autoplay=1&playsinline=1&rel=0&enablejsapi=1";
+    
+ renderSongs(currentSongs);
+}
+
+  
 
 function updateSongButton(hasSongs) {
   const songButton = document.getElementById("songButton");
@@ -472,23 +540,40 @@ function renderSongs(songs) {
   songList.innerHTML = "";
 
   songs.forEach((song, index) => {
+
     const item = document.createElement("div");
     item.className = "song-item";
+
+    if (currentPlayingIndex === index) {
+      item.classList.add("is-selected");
+    }
 
     const name = document.createElement("div");
     name.className = "song-name";
     name.textContent = (index + 1) + ". " + song.title;
 
-    const link = document.createElement("a");
-    link.className = "song-link";
-    link.href = song.url;
-    link.target = "_blank";
-    link.textContent = "聽詩歌";
-
     item.appendChild(name);
-    item.appendChild(link);
+
+    if (currentPlayingIndex !== index) {
+
+      const link = document.createElement("a");
+      link.className = "song-link";
+      link.href = "#";
+      link.textContent = "聽詩歌";
+
+      link.onclick = function(e){
+        e.preventDefault();
+        playSong(song.url, index);
+      };
+
+      item.appendChild(link);
+
+    }
+
     songList.appendChild(item);
+
   });
+
 }
 
 async function loadSongs() {
