@@ -214,6 +214,14 @@ main{
   border-radius:999px;
 }
 
+  .song-link.is-playing{
+  background:#e5e5e5;
+  border-color:#d0d0d0;
+  color:#888;
+  pointer-events:none;
+  cursor:default;
+}
+
 .update-notice{
   display:none;
 
@@ -463,6 +471,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 let pdfUrl = "weekly.pdf";
 let currentSongs = [];
+let currentPlayingIndex = null;
 
 function openSongPanel() {
   if (!currentSongs.length) return;
@@ -473,7 +482,9 @@ function closeSongPanel() {
   document.getElementById("songOverlay").classList.remove("show");
 }
 
-  function playSong(url) {
+  function playSong(url, index) {
+    
+  currentPlayingIndex = index;
 
   const match = url.match(
     /(?:youtu\.be\/|v=)([^&\n?#]+)/
@@ -492,6 +503,8 @@ function closeSongPanel() {
     "https://www.youtube.com/embed/" +
     videoId +
     "?autoplay=1";
+    
+ renderSongs(currentSongs);
 }
 
   
@@ -525,12 +538,23 @@ function renderSongs(songs) {
     const link = document.createElement("a");
     link.className = "song-link";
     link.href = "#";
-    link.textContent = "播放";
 
-    link.onclick = function(e){
-      e.preventDefault();
-      playSong(song.url);
-    };
+    if (currentPlayingIndex === index) {
+
+      link.textContent = "播放中";
+      link.classList.add("is-playing");
+
+    } else {
+
+      link.textContent = "聽詩歌";
+      link.classList.remove("is-playing");
+
+      link.onclick = function(e){
+        e.preventDefault();
+        playSong(song.url, index);
+      };
+
+    }
 
     item.appendChild(name);
     item.appendChild(link);
