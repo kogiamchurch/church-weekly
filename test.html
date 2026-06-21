@@ -462,6 +462,7 @@ canvas{
     height="220"
     src=""
     frameborder="0"
+    allow="autoplay; encrypted-media; picture-in-picture"
     allowfullscreen>
   </iframe>
 
@@ -513,7 +514,7 @@ function closeSongPanel() {
   document.getElementById("youtubePlayer").src =
     "https://www.youtube.com/embed/" +
     videoId +
-    "?autoplay=1";
+    "?autoplay=1&playsinline=1&rel=0&enablejsapi=1";
     
  renderSongs(currentSongs);
 }
