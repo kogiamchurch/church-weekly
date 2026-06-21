@@ -480,6 +480,12 @@ function openSongPanel() {
 
 function closeSongPanel() {
   document.getElementById("songOverlay").classList.remove("show");
+
+  document.getElementById("youtubePlayer").src = "";
+  document.getElementById("playerContainer").style.display = "none";
+
+  currentPlayingIndex = null;
+  renderSongs(currentSongs);
 }
 
   function playSong(url, index) {
@@ -502,7 +508,7 @@ function closeSongPanel() {
   document.getElementById("youtubePlayer").src =
     "https://www.youtube.com/embed/" +
     videoId +
-    "?autoplay=1";
+    "?autoplay=1&playsinline=1";
     
  renderSongs(currentSongs);
 }
