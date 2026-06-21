@@ -1,4 +1,17 @@
 {
-  "updatedAt": "2026-06-21T01:12:44.382Z",
-  "songs": []
+  "updatedAt": "2026-06-21T06:53:52.257Z",
+  "songs": [
+    {
+      "title": "讓我 / Let Me",
+      "url": "https://youtu.be/skfvueij950?si=K42Jn7InNGevaLMW"
+    },
+    {
+      "title": "世界之光 Light of the World",
+      "url": "https://www.youtube.com/watch?v=OI93he8cv4U&list=PLwmTeRkjhuqyoSFUkX0TrsGel_duRn8we&index=3"
+    },
+    {
+      "title": "點燃",
+      "url": "https://www.youtube.com/watch?v=tmOpAKimzzY&list=PLwmTeRkjhuqyoSFUkX0TrsGel_duRn8we&index=5"
+    }
+  ]
 }
