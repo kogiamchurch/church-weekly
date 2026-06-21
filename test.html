@@ -432,9 +432,29 @@ canvas{
       <button class="song-close" type="button" onclick="closeSongPanel()">×</button>
     </div>
 
-    <div id="songList" class="song-list"></div>
+<div id="playerContainer" style="display:none;margin-bottom:18px;">
 
+  <div style="
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:10px;
+    color:#2f4f7f;
+  ">
+    正在播放
   </div>
+
+  <iframe
+    id="youtubePlayer"
+    width="100%"
+    height="220"
+    src=""
+    frameborder="0"
+    allowfullscreen>
+  </iframe>
+
+</div>
+
+<div id="songList" class="song-list"></div>
 </div>
 
 <script>
@@ -452,6 +472,29 @@ function openSongPanel() {
 function closeSongPanel() {
   document.getElementById("songOverlay").classList.remove("show");
 }
+
+  function playSong(url) {
+
+  const match = url.match(
+    /(?:youtu\.be\/|v=)([^&\n?#]+)/
+  );
+
+  if (!match) {
+    window.open(url, "_blank");
+    return;
+  }
+
+  const videoId = match[1];
+
+  document.getElementById("playerContainer").style.display = "block";
+
+  document.getElementById("youtubePlayer").src =
+    "https://www.youtube.com/embed/" +
+    videoId +
+    "?autoplay=1";
+}
+
+  
 
 function updateSongButton(hasSongs) {
   const songButton = document.getElementById("songButton");
@@ -481,9 +524,13 @@ function renderSongs(songs) {
 
     const link = document.createElement("a");
     link.className = "song-link";
-    link.href = song.url;
-    link.target = "_blank";
-    link.textContent = "聽詩歌";
+    link.href = "#";
+    link.textContent = "播放";
+
+    link.onclick = function(e){
+      e.preventDefault();
+      playSong(song.url);
+    };
 
     item.appendChild(name);
     item.appendChild(link);
