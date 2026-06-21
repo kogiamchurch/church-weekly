@@ -1,17 +1,21 @@
 {
-  "updatedAt": "2026-06-21T06:53:52.257Z",
+  "updatedAt": "2026-06-21T15:15:30.847Z",
   "songs": [
     {
-      "title": "讓我 / Let Me",
-      "url": "https://youtu.be/skfvueij950?si=K42Jn7InNGevaLMW"
+      "title": "耶穌基督 In Christ Alone",
+      "url": "https://www.youtube.com/watch?v=XtM4DCREJp0&list=PLwmTeRkjhuqyoSFUkX0TrsGel_duRn8we&index=4"
+    },
+    {
+      "title": "詩篇23篇 / Psalm 23",
+      "url": "https://www.youtube.com/watch?v=ymsadI3LZ_w&list=PLwmTeRkjhuqyoSFUkX0TrsGel_duRn8we&index=1"
     },
     {
       "title": "世界之光 Light of the World",
       "url": "https://www.youtube.com/watch?v=OI93he8cv4U&list=PLwmTeRkjhuqyoSFUkX0TrsGel_duRn8we&index=3"
     },
     {
-      "title": "點燃",
-      "url": "https://www.youtube.com/watch?v=tmOpAKimzzY&list=PLwmTeRkjhuqyoSFUkX0TrsGel_duRn8we&index=5"
+      "title": "讓我 / Let Me",
+      "url": "https://www.youtube.com/watch?v=skfvueij950&list=PLwmTeRkjhuqyoSFUkX0TrsGel_duRn8we&index=2"
     }
   ]
 }
