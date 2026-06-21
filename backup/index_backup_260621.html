@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>鼓巖教會週報</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  background:#f3f1ec;
+  font-family:sans-serif;
+  color:#222;
+}
+
+main{
+  max-width:900px;
+  margin:40px auto;
+  padding:0 8px 0px;
+}
+
+/* 上方功能按鈕 */
+.quick-links{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.quick-card{
+  width:100%;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  text-align:left;
+  background:#fff;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:10px;
+  padding:18px 20px;
+  font-family:inherit;
+
+  text-decoration:none;
+  color:#333;
+
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  cursor:pointer;
+}
+
+.quick-card.disabled{
+  opacity:.55;
+  pointer-events:none;
+  cursor:default;
+}
+
+.mail-card{
+  background:#edf8f0;
+  border:1px solid #d6eadb;
+  color:#2f6b45;
+}
+
+.mail-card .quick-icon{
+  color:#4f9b68;
+}
+
+.mail-card .quick-title{
+  color:#2f6b45;
+}
+
+.mail-card .quick-subtitle{
+  color:#5f8a6d;
+}
+
+.song-card{
+  background:#eef5ff;
+  border:1px solid #d8e7ff;
+  color:#3b66b0;
+}
+
+.song-card .quick-icon{
+  color:#5b8def;
+}
+
+.song-card .quick-title{
+  color:#3b66b0;
+}
+
+.song-card .quick-subtitle{
+  color:#6b88bb;
+}
+
+.song-card.no-data{
+  background:#f4f4f4;
+  border:1px solid #e0e0e0;
+  color:#999;
+}
+
+.song-card.no-data .quick-icon,
+.song-card.no-data .quick-title,
+.song-card.no-data .quick-subtitle{
+  color:#999;
+}
+
+.quick-icon{
+  width:42px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:30px;
+  flex-shrink:0;
+}
+
+.quick-title{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.quick-subtitle{
+  font-size:15px;
+  color:#777;
+}
+
+/* 詩歌底部面板 */
+.song-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.38);
+  z-index:1000;
+}
+
+.song-overlay.show{
+  display:block;
+}
+
+.song-panel{
+  position:fixed;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+
+  width:100%;
+  max-width:640px;
+  max-height:75vh;
+  overflow-y:auto;
+  background:#fff;
+  border-radius:18px 18px 0 0;
+  box-shadow:0 -4px 24px rgba(0,0,0,.18);
+
+  padding:24px 20px 28px;
+  box-sizing:border-box;
+}
+
+.song-panel-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.song-panel-title{
+  font-size:24px;
+  font-weight:700;
+  color:#2f4f7f;
+}
+
+.song-close{
+  border:none;
+  background:#f2f2f2;
+  color:#555;
+  font-size:20px;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+}
+
+.song-list{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.song-item{
+  background:#f7f9fc;
+  border:1px solid #e4eaf3;
+  border-radius:12px;
+  padding:16px;
+}
+
+.song-name{
+  font-size:18px;
+  font-weight:700;
+  color:#333;
+  margin-bottom:10px;
+  line-height:1.5;
+}
+
+.song-link{
+  display:inline-block;
+  background:#eef5ff;
+  border:1px solid #d8e7ff;
+  color:#3b66b0;
+  text-decoration:none;
+  font-size:15px;
+  font-weight:700;
+  padding:8px 14px;
+  border-radius:999px;
+}
+
+.update-notice{
+  display:none;
+
+  background:#fff3cd;
+  border:1px solid #ffe69c;
+  color:#7a5a00;
+  border-radius:8px;
+  padding:18px 20px;
+  margin-bottom:20px;
+
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.update-icon{
+  width:80px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  font-size:74px;
+  line-height:1;
+  flex-shrink:0;
+}
+
+.update-content{
+  text-align:left;
+}
+
+.update-title{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.update-subtitle{
+  font-size:24px;
+  line-height:1.6;
+  color:#6b5200;
+}
+  
+.page-wrapper{
+  position:relative;
+  margin-bottom:30px;
+  background:white;
+  overflow:hidden;
+  box-shadow:0 4px 16px rgba(0,0,0,.12);
+}
+
+/* top可以調整cover圖的距離 */
+.cover-bg{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  z-index:3;
+  pointer-events:none;
+}
+
+canvas{
+  width:100%;
+  display:block;
+  position:relative;
+  z-index:2;
+  background:transparent;
+}
+
+.loading,
+.error{
+  text-align:center;
+  padding:100px 20px;
+  font-size:24px;
+}
+
+.error{
+  color:red;
+}
+
+/* iPad + 手機直式版 */
+@media (orientation: portrait) and (max-width: 1024px){
+
+  main{
+    max-width:100%;
+    margin:0;
+    padding:0;
+  }
+
+.quick-links{
+  gap:0;
+  margin:0;
+  padding:0;
+}
+
+.quick-card{
+  padding:14px 12px;
+  gap:10px;
+  border-radius:0;
+}
+
+.quick-icon{
+    width:34px;
+    height:34px;
+    font-size:24px;
+  }
+
+  .quick-title{
+    font-size:20px;
+  }
+
+  .quick-subtitle{
+    font-size:16px;
+  }
+
+  .song-panel{
+    max-width:100%;
+    padding:22px 18px 26px;
+  }
+
+  .song-panel-title{
+    font-size:22px;
+  }
+
+  .song-name{
+    font-size:17px;
+  }
+
+  .update-notice{
+    margin:0;
+    border-radius:0;
+    border-left:none;
+    border-right:none;
+  }
+
+  .update-title{
+    font-size:28px;
+  }
+
+  .update-subtitle{
+    font-size:18px;
+  }
+
+  .update-icon{
+    font-size:68px;
+  }
+
+  .page-wrapper{
+    margin-bottom:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+  }
+
+  .page-wrapper:last-child{
+    margin-bottom:0;
+  }
+
+}
+  
+</style>
+</head>
+
+<body>
+
+<main>
+
+  <div class="quick-links">
+
+    <a class="quick-card mail-card" href="https://docs.google.com/forms/d/e/1FAIpQLSdkNuP4T47a7h5yCSkHeDyYf6dRgMisMRpGmdeIc_J9k3Cytg/viewform?usp=send_form" target="_blank">
+      <div class="quick-icon">✉</div>
+      <div>
+        <div class="quick-title">教會信箱</div>
+        <div class="quick-subtitle">我有話想說</div>
+      </div>
+    </a>
+
+    <button id="songButton" class="quick-card song-card no-data disabled" type="button" onclick="openSongPanel()">
+      <div class="quick-icon">♫</div>
+      <div>
+        <div class="quick-title">本週詩歌</div>
+        <div id="songButtonSubtitle" class="quick-subtitle">本週尚無資料</div>
+      </div>
+    </button>
+
+  </div>
+
+  <div id="updateNotice" class="update-notice">
+
+    <div class="update-icon">
+      ⚠️
+    </div>
+
+    <div class="update-content">
+
+      <div class="update-title">
+        本週週報尚在更新中
+      </div>
+
+      <div class="update-subtitle">
+        目前顯示上一期週報，敬請稍候。
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="pages" class="loading">週報載入中...</div>
+
+</main>
+
+<div id="songOverlay" class="song-overlay" onclick="closeSongPanel()">
+  <div class="song-panel" onclick="event.stopPropagation()">
+
+    <div class="song-panel-header">
+      <div class="song-panel-title">本週詩歌</div>
+      <button class="song-close" type="button" onclick="closeSongPanel()">×</button>
+    </div>
+
+    <div id="songList" class="song-list"></div>
+
+  </div>
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+let pdfUrl = "weekly.pdf";
+let currentSongs = [];
+
+function openSongPanel() {
+  if (!currentSongs.length) return;
+  document.getElementById("songOverlay").classList.add("show");
+}
+
+function closeSongPanel() {
+  document.getElementById("songOverlay").classList.remove("show");
+}
+
+function updateSongButton(hasSongs) {
+  const songButton = document.getElementById("songButton");
+  const subtitle = document.getElementById("songButtonSubtitle");
+
+  if (hasSongs) {
+    songButton.classList.remove("no-data", "disabled");
+    subtitle.textContent = "聆聽敬拜詩歌";
+  } else {
+    songButton.classList.add("no-data", "disabled");
+    subtitle.textContent = "本週尚無資料";
+  }
+}
+
+function renderSongs(songs) {
+  const songList = document.getElementById("songList");
+
+  songList.innerHTML = "";
+
+  songs.forEach((song, index) => {
+    const item = document.createElement("div");
+    item.className = "song-item";
+
+    const name = document.createElement("div");
+    name.className = "song-name";
+    name.textContent = (index + 1) + ". " + song.title;
+
+    const link = document.createElement("a");
+    link.className = "song-link";
+    link.href = song.url;
+    link.target = "_blank";
+    link.textContent = "聽詩歌";
+
+    item.appendChild(name);
+    item.appendChild(link);
+    songList.appendChild(item);
+  });
+}
+
+async function loadSongs() {
+  try {
+    const response = await fetch("songs.json?v=" + Date.now());
+
+    if (!response.ok) {
+      currentSongs = [];
+      updateSongButton(false);
+      return;
+    }
+
+    const data = await response.json();
+
+    const songUpdatedAt = data.updatedAt
+      ? new Date(data.updatedAt)
+      : null;
+
+    const weekStart = getThisWeekMondayStart(new Date());
+
+    const isCurrentWeek =
+      songUpdatedAt &&
+      songUpdatedAt.getTime() >= weekStart.getTime();
+
+    const songs = isCurrentWeek && Array.isArray(data.songs)
+      ? data.songs.filter(song => song.title && song.url)
+      : [];
+
+    currentSongs = songs;
+
+    if (songs.length) {
+      renderSongs(songs);
+      updateSongButton(true);
+    } else {
+      renderSongs([]);
+      updateSongButton(false);
+    }
+
+  } catch (error) {
+    console.error(error);
+    currentSongs = [];
+    renderSongs([]);
+    updateSongButton(false);
+  }
+}
+
+function getThisWeekMondayStart(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+
+  d.setDate(d.getDate() + diffToMonday);
+  d.setHours(0, 0, 0, 0);
+
+  return d;
+}
+
+function getThisWeekThursdaySix(date) {
+  const monday = getThisWeekMondayStart(date);
+
+  const thursday = new Date(monday);
+  thursday.setDate(monday.getDate() + 3);
+  thursday.setHours(6, 0, 0, 0);
+
+  return thursday;
+}
+
+async function checkWeeklyUpdateNotice() {
+  const notice = document.getElementById("updateNotice");
+
+  try {
+    const response = await fetch("weekly-info.json?v=" + Date.now());
+
+    if (!response.ok) {
+      notice.style.display = "none";
+      return;
+    }
+
+    const info = await response.json();
+
+    if (!info.modifiedTime) {
+      notice.style.display = "none";
+      return;
+    }
+
+    pdfUrl = "weekly.pdf?v=" + encodeURIComponent(info.modifiedTime);
+
+    const now = new Date();
+    const pdfUpdated = new Date(info.modifiedTime);
+
+    const weekStart = getThisWeekMondayStart(now);
+    const thursdaySix = getThisWeekThursdaySix(now);
+
+    const shouldCheckUpdate = now.getTime() >= thursdaySix.getTime();
+    const isCurrentWeekPdf = pdfUpdated.getTime() >= weekStart.getTime();
+
+    if (shouldCheckUpdate && !isCurrentWeekPdf) {
+      notice.style.display = "flex";
+    } else {
+      notice.style.display = "none";
+    }
+
+  } catch (error) {
+    console.error(error);
+    notice.style.display = "none";
+  }
+}
+
+async function loadWeeklyPdf() {
+  try {
+    await checkWeeklyUpdateNotice();
+
+    const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+    const container = document.getElementById("pages");
+
+    container.className = "";
+    container.innerHTML = "";
+
+    const isPortraitTabletOrMobile =
+      window.matchMedia("(orientation: portrait) and (max-width: 1024px)").matches;
+
+    const scale = isPortraitTabletOrMobile ? 2 : 3;
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+
+      const viewport = page.getViewport({
+        scale: scale
+      });
+
+      const fullCanvas = document.createElement("canvas");
+      const fullContext = fullCanvas.getContext("2d");
+
+      fullCanvas.width = viewport.width;
+      fullCanvas.height = viewport.height;
+
+      await page.render({
+        canvasContext: fullContext,
+        viewport: viewport
+      }).promise;
+
+      const halfWidth = fullCanvas.width / 2;
+
+      const order = pageNum === 1 ? [1, 0] : [0, 1];
+
+      for (const i of order) {
+        const splitCanvas = document.createElement("canvas");
+        const splitContext = splitCanvas.getContext("2d");
+
+        splitCanvas.width = halfWidth;
+        splitCanvas.height = fullCanvas.height;
+
+        splitContext.drawImage(
+          fullCanvas,
+          i * halfWidth,
+          0,
+          halfWidth,
+          fullCanvas.height,
+          0,
+          0,
+          halfWidth,
+          fullCanvas.height
+        );
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "page-wrapper";
+
+
+        /* 下面這段是第1頁cover底圖-要暫時拿掉，用註解方式*/
+        if (pageNum === 1 && i === 1) {
+          const cover = document.createElement("img");
+          cover.src = "cover.png";
+          cover.className = "cover-bg";
+          wrapper.appendChild(cover);
+        }
+        /*上面這段是第1頁cover底圖-要暫時拿掉，用註解方式*/
+
+
+        wrapper.appendChild(splitCanvas);
+        container.appendChild(wrapper);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    document.getElementById("pages").innerHTML =
+      `<div class="error">週報載入失敗</div>`;
+  }
+}
+
+loadSongs();
+loadWeeklyPdf();
+</script>
+
+</body>
+</html>
