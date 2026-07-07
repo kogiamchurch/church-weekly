@@ -1,0 +1,477 @@
+body{
+  margin:0;
+  background:#f3f1ec;
+  font-family:sans-serif;
+  color:#222;
+}
+
+main{
+  max-width:900px;
+  margin:40px auto;
+  padding:0 8px 0px;
+}
+
+
+/* 上方功能按鈕 */
+.quick-links{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.quick-card{
+  width:100%;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  text-align:left;
+  background:#fff;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:10px;
+  padding:18px 20px;
+  font-family:inherit;
+  text-decoration:none;
+  color:#333;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  cursor:pointer;
+}
+
+.quick-card.disabled{
+  opacity:.55;
+  pointer-events:none;
+  cursor:default;
+}
+
+.mail-card{
+  background:#edf8f0;
+  border:1px solid #d6eadb;
+  color:#2f6b45;
+}
+
+.mail-card .quick-icon{
+  color:#4f9b68;
+}
+
+.mail-card .quick-title{
+  color:#2f6b45;
+}
+
+.mail-card .quick-subtitle{
+  color:#5f8a6d;
+}
+
+.song-card{
+  background:#eef5ff;
+  border:1px solid #d8e7ff;
+  color:#3b66b0;
+}
+
+.song-card .quick-icon{
+  color:#5b8def;
+}
+
+.song-card .quick-title{
+  color:#3b66b0;
+}
+
+.song-card .quick-subtitle{
+  color:#6b88bb;
+}
+
+.song-card.no-data{
+  background:#f4f4f4;
+  border:1px solid #e0e0e0;
+  color:#999;
+}
+
+.song-card.no-data .quick-icon,
+.song-card.no-data .quick-title,
+.song-card.no-data .quick-subtitle{
+  color:#999;
+}
+
+.quick-icon{
+  width:42px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  flex-shrink:0;
+}
+
+.quick-title{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.quick-subtitle{
+  font-size:15px;
+  color:#777;
+}
+
+
+/* 詩歌底部面板 */
+.song-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.38);
+  z-index:1000;
+}
+
+.song-overlay.show{
+  display:block;
+}
+
+.song-panel{
+  position:fixed;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:640px;
+  max-height:75vh;
+  overflow-y:auto;
+  background:#fff;
+  border-radius:18px 18px 0 0;
+  box-shadow:0 -4px 24px rgba(0,0,0,.18);
+  padding:24px 20px 28px;
+  box-sizing:border-box;
+}
+
+.song-panel-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.song-panel-title{
+  font-size:24px;
+  font-weight:700;
+  color:#2f4f7f;
+}
+
+.song-close{
+  border:none;
+  background:#f2f2f2;
+  color:#555;
+  font-size:20px;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+}
+
+.song-list{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.song-item{
+  background:#f7f9fc;
+  border:1px solid #e4eaf3;
+  border-radius:12px;
+  padding:16px;
+}
+
+.song-item.is-selected{
+  background:#eef5ff;
+  border-color:#bcd5ff;
+}
+
+.song-name{
+  font-size:18px;
+  font-weight:700;
+  color:#333;
+  margin-bottom:10px;
+  line-height:1.5;
+}
+
+.song-link{
+  display:inline-block;
+  background:#eef5ff;
+  border:1px solid #d8e7ff;
+  color:#3b66b0;
+  text-decoration:none;
+  font-size:15px;
+  font-weight:700;
+  padding:8px 14px;
+  border-radius:999px;
+}
+
+.song-link.is-playing{
+  background:#e5e5e5;
+  border-color:#d0d0d0;
+  color:#888;
+  pointer-events:none;
+  cursor:default;
+}
+
+
+/* 週報更新提示 */
+.update-notice{
+  display:none;
+  background:#fff3cd;
+  border:1px solid #ffe69c;
+  color:#7a5a00;
+  border-radius:8px;
+  padding:18px 20px;
+  margin-bottom:20px;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.update-icon{
+  width:80px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:74px;
+  line-height:1;
+  flex-shrink:0;
+}
+
+.update-content{
+  text-align:left;
+}
+
+.update-title{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.update-subtitle{
+  font-size:24px;
+  line-height:1.6;
+  color:#6b5200;
+}
+
+
+/* 週報頁面 */
+.page-wrapper{
+  position:relative;
+  margin-bottom:30px;
+  background:white;
+  overflow:hidden;
+  box-shadow:0 4px 16px rgba(0,0,0,.12);
+}
+
+/* top 可以調整 cover 圖的距離 */
+.cover-bg{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  z-index:3;
+  pointer-events:none;
+}
+
+canvas{
+  width:100%;
+  display:block;
+  position:relative;
+  z-index:2;
+  background:transparent;
+}
+
+.loading,
+.error{
+  text-align:center;
+  padding:100px 20px;
+  font-size:24px;
+}
+
+.error{
+  color:red;
+}
+
+
+/* iPad + 手機直式版 */
+@media (orientation: portrait) and (max-width: 1024px){
+
+  main{
+    max-width:100%;
+    margin:0;
+    padding:0;
+  }
+
+  .quick-links{
+    gap:0;
+    margin:0;
+    padding:0;
+  }
+
+  .quick-card{
+    padding:14px 12px;
+    gap:10px;
+    border-radius:0;
+  }
+
+  .quick-icon{
+    width:34px;
+    height:34px;
+    font-size:24px;
+  }
+
+  .quick-title{
+    font-size:20px;
+  }
+
+  .quick-subtitle{
+    font-size:16px;
+  }
+
+  .song-panel{
+    max-width:100%;
+    padding:22px 18px 26px;
+  }
+
+  .song-panel-title{
+    font-size:22px;
+  }
+
+  .song-name{
+    font-size:17px;
+  }
+
+  .update-notice{
+    margin:0;
+    border-radius:0;
+    border-left:none;
+    border-right:none;
+  }
+
+  .update-title{
+    font-size:28px;
+  }
+
+  .update-subtitle{
+    font-size:18px;
+  }
+
+  .update-icon{
+    font-size:68px;
+  }
+
+  .page-wrapper{
+    margin-bottom:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+  }
+
+  .page-wrapper:last-child{
+    margin-bottom:0;
+  }
+
+}
+
+
+/* 臨時公告彈窗 */
+.notice-modal{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  font-family:Arial, "Noto Sans TC", sans-serif;
+}
+
+.notice-modal-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(0, 0, 0, 0.45);
+}
+
+.notice-modal-box{
+  position:relative;
+  width:calc(100% - 32px);
+  max-width:480px;
+  margin:80px auto 0;
+  background:#ffffff;
+  border-radius:18px;
+  box-shadow:0 14px 40px rgba(0, 0, 0, 0.22);
+  padding:22px 22px 20px;
+  box-sizing:border-box;
+}
+
+.notice-modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.notice-modal-label{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 10px;
+  border-radius:999px;
+  background:#fff3cd;
+  color:#8a5a00;
+  font-size:14px;
+  font-weight:700;
+}
+
+.notice-modal-close{
+  appearance:none;
+  border:0;
+  background:transparent;
+  font-size:30px;
+  line-height:1;
+  cursor:pointer;
+  color:#555;
+  padding:0 2px;
+}
+
+.notice-modal-title{
+  margin:0 0 12px;
+  font-size:24px;
+  line-height:1.35;
+  color:#111827;
+}
+
+.notice-modal-message{
+  font-size:17px;
+  line-height:1.8;
+  color:#222;
+  white-space:pre-wrap;
+  margin-bottom:20px;
+}
+
+.notice-modal-button{
+  width:100%;
+  border:0;
+  border-radius:12px;
+  background:#2563eb;
+  color:#ffffff;
+  font-size:17px;
+  font-weight:700;
+  padding:13px 16px;
+  cursor:pointer;
+}
+
+@media (max-width: 600px){
+
+  .notice-modal-box{
+    width:calc(100% - 24px);
+    margin-top:52px;
+    padding:20px 18px 18px;
+    border-radius:16px;
+  }
+
+  .notice-modal-title{
+    font-size:22px;
+  }
+
+  .notice-modal-message{
+    font-size:16px;
+  }
+
+}
