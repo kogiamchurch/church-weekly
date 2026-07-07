@@ -8,9 +8,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-<style>
-
-</style>
+<link rel="stylesheet" href="weekly.css?v=20260707">
 </head>
 
 <body>
@@ -69,30 +67,52 @@
       <button class="song-close" type="button" onclick="closeSongPanel()">×</button>
     </div>
 
-<div id="playerContainer" style="display:none;margin-bottom:18px;">
+    <div id="playerContainer" style="display:none;margin-bottom:18px;">
 
-  <div style="
-    font-size:16px;
-    font-weight:700;
-    margin-bottom:10px;
-    color:#2f4f7f;
-  ">
-    正在播放
+      <div style="
+        font-size:16px;
+        font-weight:700;
+        margin-bottom:10px;
+        color:#2f4f7f;
+      ">
+        正在播放
+      </div>
+
+      <iframe
+        id="youtubePlayer"
+        width="100%"
+        height="220"
+        src=""
+        frameborder="0"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+
+    </div>
+
+    <div id="songList" class="song-list"></div>
+
   </div>
-
-  <iframe
-    id="youtubePlayer"
-    width="100%"
-    height="220"
-    src=""
-    frameborder="0"
-    allow="autoplay; encrypted-media; picture-in-picture"
-    allowfullscreen>
-  </iframe>
-
 </div>
 
-<div id="songList" class="song-list"></div>
+<!-- 臨時公告彈窗 -->
+<div id="noticeModal" class="notice-modal" style="display: none;">
+  <div class="notice-modal-backdrop"></div>
+
+  <div class="notice-modal-box">
+    <div class="notice-modal-header">
+      <div class="notice-modal-label">臨時公告</div>
+      <button id="noticeModalClose" class="notice-modal-close" type="button">×</button>
+    </div>
+
+    <h2 id="noticeModalTitle" class="notice-modal-title"></h2>
+
+    <div id="noticeModalMessage" class="notice-modal-message"></div>
+
+    <button id="noticeModalConfirm" class="notice-modal-button" type="button">
+      我知道了
+    </button>
+  </div>
 </div>
 
 <script>
@@ -118,8 +138,7 @@ function closeSongPanel() {
   renderSongs(currentSongs);
 }
 
-  function playSong(url, index) {
-    
+function playSong(url, index) {
   currentPlayingIndex = index;
 
   const match = url.match(
@@ -139,11 +158,9 @@ function closeSongPanel() {
     "https://www.youtube.com/embed/" +
     videoId +
     "?autoplay=1&playsinline=1&rel=0&enablejsapi=1";
-    
- renderSongs(currentSongs);
-}
 
-  
+  renderSongs(currentSongs);
+}
 
 function updateSongButton(hasSongs) {
   const songButton = document.getElementById("songButton");
@@ -197,7 +214,6 @@ function renderSongs(songs) {
     songList.appendChild(item);
 
   });
-
 }
 
 async function loadSongs() {
@@ -366,16 +382,13 @@ async function loadWeeklyPdf() {
         const wrapper = document.createElement("div");
         wrapper.className = "page-wrapper";
 
-
-        /* 下面這段是第1頁cover底圖-要暫時拿掉，用註解方式*/
+        /* 下面這段是第 1 頁 cover 底圖 */
         if (pageNum === 1 && i === 1) {
           const cover = document.createElement("img");
           cover.src = "cover.png";
           cover.className = "cover-bg";
           wrapper.appendChild(cover);
         }
-        /*上面這段是第1頁cover底圖-要暫時拿掉，用註解方式*/
-
 
         wrapper.appendChild(splitCanvas);
         container.appendChild(wrapper);
@@ -391,25 +404,6 @@ async function loadWeeklyPdf() {
 loadSongs();
 loadWeeklyPdf();
 </script>
-<!-- 臨時公告彈窗 -->
-<div id="noticeModal" class="notice-modal" style="display: none;">
-  <div class="notice-modal-backdrop"></div>
 
-  <div class="notice-modal-box">
-    <div class="notice-modal-header">
-      <div class="notice-modal-label">臨時公告</div>
-      <button id="noticeModalClose" class="notice-modal-close" type="button">×</button>
-    </div>
-
-    <h2 id="noticeModalTitle" class="notice-modal-title"></h2>
-
-    <div id="noticeModalMessage" class="notice-modal-message"></div>
-
-    <button id="noticeModalConfirm" class="notice-modal-button" type="button">
-      我知道了
-    </button>
-  </div>
-</div>
-  
 </body>
 </html>
