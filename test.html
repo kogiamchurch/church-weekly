@@ -101,7 +101,7 @@
 
   <div class="notice-modal-box">
     <div class="notice-modal-header">
-      <div class="notice-modal-label">臨時公告</div>
+      <div class="notice-modal-label">重要提醒</div>
       <button id="noticeModalClose" class="notice-modal-close" type="button">×</button>
     </div>
 
@@ -110,7 +110,7 @@
     <div id="noticeModalMessage" class="notice-modal-message"></div>
 
     <button id="noticeModalConfirm" class="notice-modal-button" type="button">
-      我知道了
+      關閉視窗
     </button>
   </div>
 </div>
@@ -430,7 +430,6 @@ function closeNoticeModal() {
 function bindNoticeModalButtons() {
   const closeButton = document.getElementById("noticeModalClose");
   const confirmButton = document.getElementById("noticeModalConfirm");
-  const backdrop = document.querySelector(".notice-modal-backdrop");
 
   if (closeButton) {
     closeButton.onclick = closeNoticeModal;
@@ -438,10 +437,6 @@ function bindNoticeModalButtons() {
 
   if (confirmButton) {
     confirmButton.onclick = closeNoticeModal;
-  }
-
-  if (backdrop) {
-    backdrop.onclick = closeNoticeModal;
   }
 }
 
