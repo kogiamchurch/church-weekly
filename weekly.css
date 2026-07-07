@@ -380,6 +380,8 @@ canvas{
   inset:0;
   z-index:9999;
   font-family:Arial, "Noto Sans TC", sans-serif;
+  align-items:center;
+  justify-content:center;
 }
 
 .notice-modal-backdrop{
@@ -389,10 +391,7 @@ canvas{
 }
 
 .notice-modal-box{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%);
+  position:relative;
   width:calc(100% - 32px);
   max-width:520px;
   background:#ffffff;
