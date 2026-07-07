@@ -767,6 +767,25 @@ async function loadWeeklyPdf() {
 loadSongs();
 loadWeeklyPdf();
 </script>
+<!-- 臨時公告彈窗 -->
+<div id="noticeModal" class="notice-modal" style="display: none;">
+  <div class="notice-modal-backdrop"></div>
 
+  <div class="notice-modal-box">
+    <div class="notice-modal-header">
+      <div class="notice-modal-label">臨時公告</div>
+      <button id="noticeModalClose" class="notice-modal-close" type="button">×</button>
+    </div>
+
+    <h2 id="noticeModalTitle" class="notice-modal-title"></h2>
+
+    <div id="noticeModalMessage" class="notice-modal-message"></div>
+
+    <button id="noticeModalConfirm" class="notice-modal-button" type="button">
+      我知道了
+    </button>
+  </div>
+</div>
+  
 </body>
 </html>
