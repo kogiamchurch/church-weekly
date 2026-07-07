@@ -385,18 +385,20 @@ canvas{
 .notice-modal-backdrop{
   position:absolute;
   inset:0;
-  background:rgba(0, 0, 0, 0.45);
+  background:rgba(0, 0, 0, 0.48);
 }
 
 .notice-modal-box{
-  position:relative;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
   width:calc(100% - 32px);
-  max-width:480px;
-  margin:80px auto 0;
+  max-width:520px;
   background:#ffffff;
   border-radius:18px;
-  box-shadow:0 14px 40px rgba(0, 0, 0, 0.22);
-  padding:22px 22px 20px;
+  box-shadow:0 14px 40px rgba(0, 0, 0, 0.24);
+  padding:24px 24px 22px;
   box-sizing:border-box;
 }
 
@@ -405,17 +407,17 @@ canvas{
   align-items:center;
   justify-content:space-between;
   gap:12px;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 
 .notice-modal-label{
   display:inline-flex;
   align-items:center;
-  padding:5px 10px;
+  padding:6px 12px;
   border-radius:999px;
   background:#fff3cd;
   color:#8a5a00;
-  font-size:14px;
+  font-size:16px;
   font-weight:700;
 }
 
@@ -423,7 +425,7 @@ canvas{
   appearance:none;
   border:0;
   background:transparent;
-  font-size:30px;
+  font-size:34px;
   line-height:1;
   cursor:pointer;
   color:#555;
@@ -431,18 +433,19 @@ canvas{
 }
 
 .notice-modal-title{
-  margin:0 0 12px;
-  font-size:24px;
+  margin:0 0 14px;
+  font-size:30px;
   line-height:1.35;
   color:#111827;
+  font-weight:800;
 }
 
 .notice-modal-message{
-  font-size:17px;
-  line-height:1.8;
+  font-size:21px;
+  line-height:1.85;
   color:#222;
   white-space:pre-wrap;
-  margin-bottom:20px;
+  margin-bottom:26px;
 }
 
 .notice-modal-button{
@@ -451,9 +454,9 @@ canvas{
   border-radius:12px;
   background:#2563eb;
   color:#ffffff;
-  font-size:17px;
+  font-size:21px;
   font-weight:700;
-  padding:13px 16px;
+  padding:15px 16px;
   cursor:pointer;
 }
 
@@ -461,17 +464,31 @@ canvas{
 
   .notice-modal-box{
     width:calc(100% - 24px);
-    margin-top:52px;
-    padding:20px 18px 18px;
+    max-width:none;
+    padding:22px 18px 20px;
     border-radius:16px;
   }
 
+  .notice-modal-label{
+    font-size:15px;
+  }
+
+  .notice-modal-close{
+    font-size:34px;
+  }
+
   .notice-modal-title{
-    font-size:22px;
+    font-size:28px;
   }
 
   .notice-modal-message{
-    font-size:16px;
+    font-size:20px;
+    line-height:1.8;
+  }
+
+  .notice-modal-button{
+    font-size:20px;
+    padding:15px 16px;
   }
 
 }
