@@ -8,385 +8,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-<style>
-body{
-  margin:0;
-  background:#f3f1ec;
-  font-family:sans-serif;
-  color:#222;
-}
-
-main{
-  max-width:900px;
-  margin:40px auto;
-  padding:0 8px 0px;
-}
-
-/* 上方功能按鈕 */
-.quick-links{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-  margin-bottom:20px;
-}
-
-.quick-card{
-  width:100%;
-  box-sizing:border-box;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  text-align:left;
-  background:#fff;
-  border:1px solid rgba(0,0,0,.08);
-  border-radius:10px;
-  padding:18px 20px;
-  font-family:inherit;
-
-  text-decoration:none;
-  color:#333;
-
-  box-shadow:0 2px 8px rgba(0,0,0,.06);
-  cursor:pointer;
-}
-
-.quick-card.disabled{
-  opacity:.55;
-  pointer-events:none;
-  cursor:default;
-}
-
-.mail-card{
-  background:#edf8f0;
-  border:1px solid #d6eadb;
-  color:#2f6b45;
-}
-
-.mail-card .quick-icon{
-  color:#4f9b68;
-}
-
-.mail-card .quick-title{
-  color:#2f6b45;
-}
-
-.mail-card .quick-subtitle{
-  color:#5f8a6d;
-}
-
-.song-card{
-  background:#eef5ff;
-  border:1px solid #d8e7ff;
-  color:#3b66b0;
-}
-
-.song-card .quick-icon{
-  color:#5b8def;
-}
-
-.song-card .quick-title{
-  color:#3b66b0;
-}
-
-.song-card .quick-subtitle{
-  color:#6b88bb;
-}
-
-.song-card.no-data{
-  background:#f4f4f4;
-  border:1px solid #e0e0e0;
-  color:#999;
-}
-
-.song-card.no-data .quick-icon,
-.song-card.no-data .quick-title,
-.song-card.no-data .quick-subtitle{
-  color:#999;
-}
-
-.quick-icon{
-  width:42px;
-  height:42px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-size:30px;
-  flex-shrink:0;
-}
-
-.quick-title{
-  font-size:20px;
-  font-weight:700;
-  margin-bottom:4px;
-}
-
-.quick-subtitle{
-  font-size:15px;
-  color:#777;
-}
-
-/* 詩歌底部面板 */
-.song-overlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.38);
-  z-index:1000;
-}
-
-.song-overlay.show{
-  display:block;
-}
-
-.song-panel{
-  position:fixed;
-  left:50%;
-  bottom:0;
-  transform:translateX(-50%);
-
-  width:100%;
-  max-width:640px;
-  max-height:75vh;
-  overflow-y:auto;
-  background:#fff;
-  border-radius:18px 18px 0 0;
-  box-shadow:0 -4px 24px rgba(0,0,0,.18);
-
-  padding:24px 20px 28px;
-  box-sizing:border-box;
-}
-
-.song-panel-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:18px;
-}
-
-.song-panel-title{
-  font-size:24px;
-  font-weight:700;
-  color:#2f4f7f;
-}
-
-.song-close{
-  border:none;
-  background:#f2f2f2;
-  color:#555;
-  font-size:20px;
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  cursor:pointer;
-}
-
-.song-list{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-
-.song-item{
-  background:#f7f9fc;
-  border:1px solid #e4eaf3;
-  border-radius:12px;
-  padding:16px;
-}
-
-.song-item.is-selected{
-  background:#eef5ff;
-  border-color:#bcd5ff;
-}
-
-.song-name{
-  font-size:18px;
-  font-weight:700;
-  color:#333;
-  margin-bottom:10px;
-  line-height:1.5;
-}
-
-.song-link{
-  display:inline-block;
-  background:#eef5ff;
-  border:1px solid #d8e7ff;
-  color:#3b66b0;
-  text-decoration:none;
-  font-size:15px;
-  font-weight:700;
-  padding:8px 14px;
-  border-radius:999px;
-}
-
-  .song-link.is-playing{
-  background:#e5e5e5;
-  border-color:#d0d0d0;
-  color:#888;
-  pointer-events:none;
-  cursor:default;
-}
-
-.update-notice{
-  display:none;
-
-  background:#fff3cd;
-  border:1px solid #ffe69c;
-  color:#7a5a00;
-  border-radius:8px;
-  padding:18px 20px;
-  margin-bottom:20px;
-
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-
-  box-shadow:0 2px 8px rgba(0,0,0,.06);
-}
-
-.update-icon{
-  width:80px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-
-  font-size:74px;
-  line-height:1;
-  flex-shrink:0;
-}
-
-.update-content{
-  text-align:left;
-}
-
-.update-title{
-  font-size:32px;
-  font-weight:700;
-  margin-bottom:6px;
-}
-
-.update-subtitle{
-  font-size:24px;
-  line-height:1.6;
-  color:#6b5200;
-}
-  
-.page-wrapper{
-  position:relative;
-  margin-bottom:30px;
-  background:white;
-  overflow:hidden;
-  box-shadow:0 4px 16px rgba(0,0,0,.12);
-}
-
-/* top可以調整cover圖的距離 */
-.cover-bg{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  z-index:3;
-  pointer-events:none;
-}
-
-canvas{
-  width:100%;
-  display:block;
-  position:relative;
-  z-index:2;
-  background:transparent;
-}
-
-.loading,
-.error{
-  text-align:center;
-  padding:100px 20px;
-  font-size:24px;
-}
-
-.error{
-  color:red;
-}
-
-/* iPad + 手機直式版 */
-@media (orientation: portrait) and (max-width: 1024px){
-
-  main{
-    max-width:100%;
-    margin:0;
-    padding:0;
-  }
-
-.quick-links{
-  gap:0;
-  margin:0;
-  padding:0;
-}
-
-.quick-card{
-  padding:14px 12px;
-  gap:10px;
-  border-radius:0;
-}
-
-.quick-icon{
-    width:34px;
-    height:34px;
-    font-size:24px;
-  }
-
-  .quick-title{
-    font-size:20px;
-  }
-
-  .quick-subtitle{
-    font-size:16px;
-  }
-
-  .song-panel{
-    max-width:100%;
-    padding:22px 18px 26px;
-  }
-
-  .song-panel-title{
-    font-size:22px;
-  }
-
-  .song-name{
-    font-size:17px;
-  }
-
-  .update-notice{
-    margin:0;
-    border-radius:0;
-    border-left:none;
-    border-right:none;
-  }
-
-  .update-title{
-    font-size:28px;
-  }
-
-  .update-subtitle{
-    font-size:18px;
-  }
-
-  .update-icon{
-    font-size:68px;
-  }
-
-  .page-wrapper{
-    margin-bottom:12px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-  }
-
-  .page-wrapper:last-child{
-    margin-bottom:0;
-  }
-
-}
-  
-</style>
+<link rel="stylesheet" href="weekly.css?v=20260707-8">
 </head>
 
 <body>
@@ -445,30 +67,52 @@ canvas{
       <button class="song-close" type="button" onclick="closeSongPanel()">×</button>
     </div>
 
-<div id="playerContainer" style="display:none;margin-bottom:18px;">
+    <div id="playerContainer" style="display:none;margin-bottom:18px;">
 
-  <div style="
-    font-size:16px;
-    font-weight:700;
-    margin-bottom:10px;
-    color:#2f4f7f;
-  ">
-    正在播放
+      <div style="
+        font-size:16px;
+        font-weight:700;
+        margin-bottom:10px;
+        color:#2f4f7f;
+      ">
+        正在播放
+      </div>
+
+      <iframe
+        id="youtubePlayer"
+        width="100%"
+        height="220"
+        src=""
+        frameborder="0"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+
+    </div>
+
+    <div id="songList" class="song-list"></div>
+
   </div>
-
-  <iframe
-    id="youtubePlayer"
-    width="100%"
-    height="220"
-    src=""
-    frameborder="0"
-    allow="autoplay; encrypted-media; picture-in-picture"
-    allowfullscreen>
-  </iframe>
-
 </div>
 
-<div id="songList" class="song-list"></div>
+<!-- 臨時公告彈窗 -->
+<div id="noticeModal" class="notice-modal" style="display: none;">
+  <div class="notice-modal-backdrop"></div>
+
+  <div class="notice-modal-box">
+    <div class="notice-modal-header">
+      <div class="notice-modal-label">重要提醒</div>
+      <button id="noticeModalClose" class="notice-modal-close" type="button">×</button>
+    </div>
+
+    <h2 id="noticeModalTitle" class="notice-modal-title"></h2>
+
+    <div id="noticeModalMessage" class="notice-modal-message"></div>
+
+    <button id="noticeModalConfirm" class="notice-modal-button" type="button">
+      關閉視窗
+    </button>
+  </div>
 </div>
 
 <script>
@@ -494,8 +138,7 @@ function closeSongPanel() {
   renderSongs(currentSongs);
 }
 
-  function playSong(url, index) {
-    
+function playSong(url, index) {
   currentPlayingIndex = index;
 
   const match = url.match(
@@ -515,11 +158,9 @@ function closeSongPanel() {
     "https://www.youtube.com/embed/" +
     videoId +
     "?autoplay=1&playsinline=1&rel=0&enablejsapi=1";
-    
- renderSongs(currentSongs);
-}
 
-  
+  renderSongs(currentSongs);
+}
 
 function updateSongButton(hasSongs) {
   const songButton = document.getElementById("songButton");
@@ -573,7 +214,6 @@ function renderSongs(songs) {
     songList.appendChild(item);
 
   });
-
 }
 
 async function loadSongs() {
@@ -742,16 +382,13 @@ async function loadWeeklyPdf() {
         const wrapper = document.createElement("div");
         wrapper.className = "page-wrapper";
 
-
-        /* 下面這段是第1頁cover底圖-要暫時拿掉，用註解方式*/
+        /* 下面這段是第 1 頁 cover 底圖 */
         if (pageNum === 1 && i === 1) {
           const cover = document.createElement("img");
           cover.src = "cover.png";
           cover.className = "cover-bg";
           wrapper.appendChild(cover);
         }
-        /*上面這段是第1頁cover底圖-要暫時拿掉，用註解方式*/
-
 
         wrapper.appendChild(splitCanvas);
         container.appendChild(wrapper);
@@ -764,8 +401,55 @@ async function loadWeeklyPdf() {
   }
 }
 
+const NOTICE_API_URL =
+  "https://script.google.com/macros/s/AKfycbwM7YK8uB0_Pcgge6qktmdnBWMpWrCf3zjAla2LHvdyJ8u5RWyEiNW6SO_wIsxoDHFC/exec?action=getNotice";
+
+function loadNotice(data) {
+  if (!data || data.show !== true) return;
+
+  const modal = document.getElementById("noticeModal");
+  const title = document.getElementById("noticeModalTitle");
+  const message = document.getElementById("noticeModalMessage");
+
+  if (!modal || !title || !message) return;
+
+  title.textContent = data.title || "臨時公告";
+  message.textContent = data.message || "";
+
+  modal.style.display = "flex";
+}
+
+function closeNoticeModal() {
+  const modal = document.getElementById("noticeModal");
+
+  if (modal) {
+    modal.style.display = "none";
+  }
+}
+
+function bindNoticeModalButtons() {
+  const closeButton = document.getElementById("noticeModalClose");
+  const confirmButton = document.getElementById("noticeModalConfirm");
+
+  if (closeButton) {
+    closeButton.onclick = closeNoticeModal;
+  }
+
+  if (confirmButton) {
+    confirmButton.onclick = closeNoticeModal;
+  }
+}
+
+function checkTemporaryNotice() {
+  const script = document.createElement("script");
+  script.src = NOTICE_API_URL + "&callback=loadNotice&v=" + Date.now();
+  document.body.appendChild(script);
+}
+
+bindNoticeModalButtons();
 loadSongs();
 loadWeeklyPdf();
+checkTemporaryNotice();
 </script>
 
 </body>
