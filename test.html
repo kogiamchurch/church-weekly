@@ -401,8 +401,60 @@ async function loadWeeklyPdf() {
   }
 }
 
+const NOTICE_API_URL =
+  "https://script.google.com/macros/s/AKfycbwM7YK8uB0_Pcgge6qktmdnBWMpWrCf3zjAla2LHvdyJ8u5RWyEiNW6SO_wIsxoDHFC/exec?action=getNotice";
+
+function loadNotice(data) {
+  if (!data || data.show !== true) return;
+
+  const modal = document.getElementById("noticeModal");
+  const title = document.getElementById("noticeModalTitle");
+  const message = document.getElementById("noticeModalMessage");
+
+  if (!modal || !title || !message) return;
+
+  title.textContent = data.title || "臨時公告";
+  message.textContent = data.message || "";
+
+  modal.style.display = "block";
+}
+
+function closeNoticeModal() {
+  const modal = document.getElementById("noticeModal");
+
+  if (modal) {
+    modal.style.display = "none";
+  }
+}
+
+function bindNoticeModalButtons() {
+  const closeButton = document.getElementById("noticeModalClose");
+  const confirmButton = document.getElementById("noticeModalConfirm");
+  const backdrop = document.querySelector(".notice-modal-backdrop");
+
+  if (closeButton) {
+    closeButton.onclick = closeNoticeModal;
+  }
+
+  if (confirmButton) {
+    confirmButton.onclick = closeNoticeModal;
+  }
+
+  if (backdrop) {
+    backdrop.onclick = closeNoticeModal;
+  }
+}
+
+function checkTemporaryNotice() {
+  const script = document.createElement("script");
+  script.src = NOTICE_API_URL + "&callback=loadNotice&v=" + Date.now();
+  document.body.appendChild(script);
+}
+
+bindNoticeModalButtons();
 loadSongs();
 loadWeeklyPdf();
+checkTemporaryNotice();
 </script>
 
 </body>
