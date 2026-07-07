@@ -464,30 +464,32 @@ canvas{
   .notice-modal-box{
     width:calc(100% - 24px);
     max-width:none;
-    padding:22px 18px 20px;
+    padding:24px 20px 22px;
     border-radius:16px;
   }
 
   .notice-modal-label{
-    font-size:15px;
+    font-size:16px;
   }
 
   .notice-modal-close{
-    font-size:34px;
+    font-size:36px;
   }
 
   .notice-modal-title{
-    font-size:28px;
+    font-size:30px;
+    line-height:1.35;
   }
 
   .notice-modal-message{
-    font-size:20px;
+    font-size:23px;
     line-height:1.8;
+    margin-bottom:28px;
   }
 
   .notice-modal-button{
-    font-size:20px;
-    padding:15px 16px;
+    font-size:22px;
+    padding:16px 16px;
   }
 
 }
