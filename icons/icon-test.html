@@ -124,9 +124,15 @@
     </main>
 
     <script>
-      window.location.replace(
-        'https://script.google.com/macros/s/AKfycbyH-ypiocCyr35TM_aig9ppiJm_L2D5SvheyVhmOYC_UK1nk3KekEd_WjpwzUUI5g8/exec'
-      );
+      const isStandalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true;
+
+      if (isStandalone) {
+        window.location.replace(
+          'https://script.google.com/macros/s/AKfycbyH-ypiocCyr35TM_aig9ppiJm_L2D5SvheyVhmOYC_UK1nk3KekEd_WjpwzUUI5g8/exec'
+        );
+      }
     </script>
     
   </body>
