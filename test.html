@@ -384,9 +384,25 @@ async function loadWeeklyPdf() {
 
         /* 下面這段是第 1 頁 cover 底圖 */
         if (pageNum === 1 && i === 1) {
+          wrapper.style.position = "relative";
+          wrapper.style.isolation = "isolate";
+
+          splitCanvas.style.position = "relative";
+          splitCanvas.style.zIndex = "1";
+
           const cover = document.createElement("img");
           cover.src = "cover.png";
           cover.className = "cover-bg";
+          cover.style.position = "absolute";
+          cover.style.top = "0";
+          cover.style.left = "0";
+          cover.style.width = "100%";
+          cover.style.height = "100%";
+          cover.style.objectFit = "cover";
+          cover.style.zIndex = "2";
+          cover.style.mixBlendMode = "multiply";
+          cover.style.pointerEvents = "none";
+
           wrapper.appendChild(cover);
         }
 
