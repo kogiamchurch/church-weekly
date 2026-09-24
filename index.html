@@ -387,6 +387,7 @@ async function loadWeeklyPdf() {
           const cover = document.createElement("img");
           cover.src = "cover.png";
           cover.className = "cover-bg";
+          splitCanvas.style.mixBlendMode = "multiply";
           wrapper.appendChild(cover);
         }
 
